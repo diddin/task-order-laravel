@@ -1,0 +1,29 @@
+php artisan db:seed --class=UserSeeder
+php artisan test --filter=CustomerTest
+
+FITUR
+
+Jenis user:
+- Master
+- Admin
+- Teknisi
+
+Master:
+- Input data admin
+- Create password admin
+- Input Tiket
+- Assign Tiket ke teknisi
+- Generate & Cetak laporan
+
+Admin
+- Input Tiket
+- Assign Tiket ke teknisi
+- Generate & Cetak Laporan
+
+Teknisi
+- Take Tiket
+- Update progress kerja di tiket
+
+Jenis laporan:
+- Laporan kinerja teknisi: Melihat kinerja teknisi dalam rentang waktu minggu/bulan
+- Tiket: Melihat data status tiket dalam rentang waktu minggu/bulan.
