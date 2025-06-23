@@ -2,19 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
-use App\Models\Customer;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
+    private $role;
+
+    public function __construct(Auth $auth)
+    {
+        $this->role = $auth::user()->role->name;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $customers = Customer::latest()->paginate(10);
-        return view('customers.index', compact('customers'));
+        return view($this->role.'.customers.index', compact('customers'));
     }
 
     /**
@@ -22,7 +29,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('customers.create');
+        return view($this->role.'.customers.create');
     }
 
     /**
@@ -31,7 +38,7 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request)
     {
         Customer::create($request->validated());
-        return redirect()->route('customers.index')->with('success', 'Customer created.');
+        return redirect()->route($this->role.'.customers.index')->with('success', 'Customer created.');
     }
 
     /**
@@ -40,7 +47,7 @@ class CustomerController extends Controller
     public function show(Customer $customer)
     {
         $customer->load(['networks.tasks.assignedUser']);
-        return view('customers.show', compact('customer'));
+        return view($this->role.'.customers.show', compact('customer'));
     }
 
     /**
@@ -48,7 +55,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        return view('customers.edit', compact('customer'));
+        return view($this->role.'.customers.edit', compact('customer'));
     }
 
     /**
@@ -57,7 +64,7 @@ class CustomerController extends Controller
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
         $customer->update($request->validated());
-        return redirect()->route('customers.index')->with('success', 'Customer updated.');
+        return redirect()->route($this->role.'.customers.index')->with('success', 'Customer updated.');
     }
 
     /**
@@ -66,6 +73,6 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return redirect()->route('customers.index')->with('success', 'Customer deleted.');
+        return redirect()->route($this->role.'.customers.index')->with('success', 'Customer deleted.');
     }
 }

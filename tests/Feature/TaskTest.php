@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Network;
+use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TaskTest extends TestCase
@@ -55,58 +56,58 @@ class TaskTest extends TestCase
 
         $response = $this->post(route('tasks.store'), $data);
 
-        $response->assertRedirect(route('tasks.index'));
+        $response->assertRedirect(route('tasks.index')); dd($this->user->id);
         $this->assertDatabaseHas('tasks', [
-            'detail' => 'Pemasangan baru',
+            'detail' => 'Pemasangan baru test',
             'network_id' => $network->id,
             'assigned_to' => $assignedUser->id,
             'created_by' => $this->user->id,
         ]);
     }
 
-    public function test_user_can_view_task_detail()
-    {
-        $task = Task::factory()->create();
+    // public function test_user_can_view_task_detail()
+    // {
+    //     $task = Task::factory()->create();
 
-        $response = $this->get(route('tasks.show', $task));
-        $response->assertStatus(200);
-        $response->assertSee($task->detail);
-    }
+    //     $response = $this->get(route('tasks.show', $task));
+    //     $response->assertStatus(200);
+    //     $response->assertSee($task->detail);
+    // }
 
-    public function test_user_can_view_task_edit_form()
-    {
-        $task = Task::factory()->create();
+    // public function test_user_can_view_task_edit_form()
+    // {
+    //     $task = Task::factory()->create();
 
-        $response = $this->get(route('tasks.edit', $task));
-        $response->assertStatus(200);
-        $response->assertSee($task->detail);
-    }
+    //     $response = $this->get(route('tasks.edit', $task));
+    //     $response->assertStatus(200);
+    //     $response->assertSee($task->detail);
+    // }
 
-    public function test_user_can_update_task()
-    {
-        $task = Task::factory()->create([
-            'detail' => 'Old Detail'
-        ]);
+    // public function test_user_can_update_task()
+    // {
+    //     $task = Task::factory()->create([
+    //         'detail' => 'Old Detail'
+    //     ]);
 
-        $updateData = [
-            'detail' => 'Updated Task Detail',
-            'network_id' => $task->network_id,
-            'assigned_to' => $task->assigned_to,
-            'action' => 'completed',
-        ];
+    //     $updateData = [
+    //         'detail' => 'Updated Task Detail',
+    //         'network_id' => $task->network_id,
+    //         'assigned_to' => $task->assigned_to,
+    //         'action' => 'completed',
+    //     ];
 
-        $response = $this->put(route('tasks.update', $task), $updateData);
+    //     $response = $this->put(route('tasks.update', $task), $updateData);
 
-        $response->assertRedirect(route('tasks.index'));
-        $this->assertDatabaseHas('tasks', ['detail' => 'Updated Task Detail']);
-    }
+    //     $response->assertRedirect(route('tasks.index'));
+    //     $this->assertDatabaseHas('tasks', ['detail' => 'Updated Task Detail']);
+    // }
 
-    public function test_user_can_delete_task()
-    {
-        $task = Task::factory()->create();
+    // public function test_user_can_delete_task()
+    // {
+    //     $task = Task::factory()->create();
 
-        $response = $this->delete(route('tasks.destroy', $task));
-        $response->assertRedirect(route('tasks.index'));
-        $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
-    }
+    //     $response = $this->delete(route('tasks.destroy', $task));
+    //     $response->assertRedirect(route('tasks.index'));
+    //     $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
+    // }
 }

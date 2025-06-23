@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Models\User;
 
 class PasswordController extends Controller
 {
@@ -21,6 +22,45 @@ class PasswordController extends Controller
         ]);
 
         $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('status', 'password-updated');
+    }
+
+    public function updateAdminPassword(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validateWithBag('updatePassword', [
+            'current_password' => ['required'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        if (!Hash::check($request->input('current_password'), $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'Password saat ini tidak cocok.',
+            ])->withInput();
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('status', 'password-updated');
+    }
+    public function updateTechnicianPassword(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validateWithBag('updatePassword', [
+            'current_password' => ['required'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        if (!Hash::check($request->input('current_password'), $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'Password saat ini tidak cocok.',
+            ])->withInput();
+        }
+
+        $user->update([
             'password' => Hash::make($validated['password']),
         ]);
 

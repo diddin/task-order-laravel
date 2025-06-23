@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Network;
+use App\Models\Task;
+use App\Models\User;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
-use App\Models\Task;
-use App\Models\Network;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+    private $role;
+
+    public function __construct(Auth $auth)
+    {
+        $this->role = $auth::user()->role->name;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -20,7 +26,7 @@ class TaskController extends Controller
                      ->latest()
                      ->paginate(10);
 
-        return view('tasks.index', compact('tasks'));
+        return view($this->role.'.tasks.index', compact('tasks'));
     }
 
     /**
@@ -32,7 +38,7 @@ class TaskController extends Controller
 
         $users = User::where('role_id', 3)->get();
 
-        return view('tasks.create', compact('networks', 'users'));
+        return view($this->role.'.tasks.create', compact('networks', 'users'));
     }
 
     /**
@@ -55,7 +61,7 @@ class TaskController extends Controller
     {
         $task->load(['network', 'assignedUser', 'creator']);
 
-        return view('tasks.show', compact('task'));
+        return view($this->role.'.tasks.show', compact('task'));
     }
 
     /**
@@ -66,7 +72,7 @@ class TaskController extends Controller
         $networks = Network::all();
         $users = User::where('role_id', 3)->get();
 
-        return view('tasks.edit', compact('task', 'networks', 'users'));
+        return view($this->role.'.tasks.edit', compact('task', 'networks', 'users'));
     }
 
     /**

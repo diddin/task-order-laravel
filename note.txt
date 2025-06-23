@@ -27,3 +27,74 @@ Teknisi
 Jenis laporan:
 - Laporan kinerja teknisi: Melihat kinerja teknisi dalam rentang waktu minggu/bulan
 - Tiket: Melihat data status tiket dalam rentang waktu minggu/bulan.
+
+
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+php artisan route:clear
+
+
+Pertanyaan ini sangat penting, karena banyak orang keliru menggunakan load() vs with() — padahal fungsinya berbeda konteks dan bisa menimbulkan bug atau query tidak efektif.
+🔍 Perbedaan Utama:
+with()	load()
+Dipakai saat query awal	Dipakai setelah data diambil
+Menyisipkan eager loading di SQL	Melakukan eager loading setelah get()
+Lebih efisien karena 1 query	Bisa menyebabkan query tambahan
+Digunakan di query builder	Digunakan pada instance model
+✅ Contoh 1 — Pakai with() (Direkomendasikan)
+
+$customers = Customer::with('networks')->get();
+
+    Artinya: Ambil semua customer dengan relasi networks dalam 2 query sekaligus.
+
+    Hasilnya: Eloquent akan optimalkan query-nya untuk performa.
+
+    ✅ Efisien dan performa bagus.
+
+⚠️ Contoh 2 — Pakai load() (Kurang tepat di sini)
+
+$customers = Customer::all();
+$customers->load('networks');
+
+    Ini dua langkah:
+
+        Ambil semua customer
+
+        Kemudian baru load relasi networks-nya
+
+    Laravel tetap efisien (pakai eager loading juga di belakang layar), tapi ini tidak lebih bagus dari with().
+
+    Cocok digunakan kalau kamu sudah punya instance model dan ingin tambah relasi secara dinamis.
+
+❌ Salah: Customer::load('networks')
+
+Ini salah secara sintaks, karena load() bukan static method. Contoh ini akan error:
+
+$customers = Customer::load('networks'); // ❌ Salah
+
+Yang benar adalah:
+
+    load() hanya bisa dipanggil pada instance atau collection model:
+
+$customer = Customer::find(1);
+$customer->load('networks'); // ✅ Benar
+
+atau
+
+    $customers = Customer::all();
+    $customers->load('networks'); // ✅ Benar
+
+🧠 Kesimpulan
+
+Gunakan:
+✅ with() → Saat kamu sedang mengambil data dari database:
+
+Customer::with('networks')->get(); // lebih efisien
+
+✅ load() → Saat kamu sudah punya model/collection, lalu ingin menambahkan relasi:
+
+$customer = Customer::find(1);
+$customer->load('networks');
+
+❌ Jangan pakai Customer::load(...) — itu akan error.

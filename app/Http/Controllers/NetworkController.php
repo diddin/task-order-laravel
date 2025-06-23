@@ -2,20 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreNetworkRequest;
-use App\Http\Requests\UpdateNetworkRequest;
 use App\Models\Network;
 use App\Models\Customer;
+use App\Http\Requests\StoreNetworkRequest;
+use App\Http\Requests\UpdateNetworkRequest;
+use Illuminate\Support\Facades\Auth;
 
 class NetworkController extends Controller
 {
+    private $role;
+
+    public function __construct(Auth $auth)
+    {
+        $this->role = $auth::user()->role->name;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $networks = Network::with('customer')->latest()->paginate(10);
-        return view('networks.index', compact('networks'));
+        return view($this->role.'.networks.index', compact('networks'));
     }
 
     /**
@@ -24,7 +32,7 @@ class NetworkController extends Controller
     public function create()
     {
         $customers = Customer::all(); // Untuk dropdown customer
-        return view('networks.create', compact('customers'));
+        return view($this->role.'.networks.create', compact('customers'));
     }
 
     /**
@@ -41,7 +49,7 @@ class NetworkController extends Controller
      */
     public function show(Network $network)
     {
-        return view('networks.show', compact('network'));
+        return view($this->role.'.networks.show', compact('network'));
     }
 
     /**
@@ -50,7 +58,7 @@ class NetworkController extends Controller
     public function edit(Network $network)
     {
         $customers = Customer::all();
-        return view('networks.edit', compact('network', 'customers'));
+        return view($this->role.'.networks.edit', compact('network', 'customers'));
     }
 
     /**

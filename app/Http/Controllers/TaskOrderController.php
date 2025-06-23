@@ -2,20 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
+use App\Models\TaskOrder;
 use App\Http\Requests\StoreTaskOrderRequest;
 use App\Http\Requests\UpdateTaskOrderRequest;
-use App\Models\TaskOrder;
-use App\Models\Task;
+use Illuminate\Support\Facades\Auth;
 
 class TaskOrderController extends Controller
 {
+    private $role;
+
+    public function __construct(Auth $auth)
+    {
+        $this->role = $auth::user()->role->name;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $taskOrders = TaskOrder::with('task')->paginate(10);
-        return view('taskorders.index', compact('taskOrders'));
+        return view($this->role.'.taskorders.index', compact('taskOrders'));
     }
 
     /**
@@ -25,7 +32,7 @@ class TaskOrderController extends Controller
     {
         $tasks = Task::all();
         $taskOrder = null;
-        return view('taskorders.create', compact('tasks', 'taskOrder'));
+        return view($this->role.'.taskorders.create', compact('tasks', 'taskOrder'));
     }
 
     /**
@@ -45,7 +52,7 @@ class TaskOrderController extends Controller
     public function show($id)
     { 
         $taskOrder = TaskOrder::findOrFail($id); //echo '<pre>'; print_r($id); echo "</pre>"; die();
-        return view('taskorders.show', compact('taskOrder'));
+        return view($this->role.'.taskorders.show', compact('taskOrder'));
     }
 
     /**
@@ -55,8 +62,15 @@ class TaskOrderController extends Controller
     { 
         $taskOrder = TaskOrder::findOrFail($id);
         $tasks = Task::all();
-        return view('taskorders.edit', compact('taskOrder', 'tasks'));
+        return view($this->role.'.taskorders.edit', compact('taskOrder', 'tasks'));
     }
+
+    // public function edit($id)
+    // { 
+    //     $taskOrder = TaskOrder::findOrFail($id);
+    //     $tasks = Task::all();
+    //     return view('taskorders.edit', compact('taskOrder', 'tasks'));
+    // }
 
     /**
      * Update the specified resource in storage.
