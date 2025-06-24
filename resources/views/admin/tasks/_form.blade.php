@@ -46,6 +46,4 @@
     @error('action') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
 </div>
 
-<button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
-    {{ $task->exists ? 'Update Tiket' : 'Buat Tiket' }}
-</button>
+<x-primary-button>{{ $task->exists ? 'Update Tiket' : 'Buat Tiket' }}</x-primary-button>

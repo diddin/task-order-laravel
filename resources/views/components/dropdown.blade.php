@@ -18,7 +18,7 @@ $width = match ($width) {
         {{ $trigger }}
     </div>
 
-    <div x-show="open"
+    {{-- <div x-show="open"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
@@ -31,5 +31,14 @@ $width = match ($width) {
         <div class="rounded-md ring-1 ring-black ring-opacity-5 {{ $contentClasses }}">
             {{ $content }}
         </div>
+    </div> --}}
+    <div
+        x-show="open"
+        class="fixed bottom-[80px] z-[9999] w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg"
+        @click.outside="open = false"
+    >
+    <div class="py-1">
+        {{ $content }}
     </div>
+</div>
 </div>

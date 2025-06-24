@@ -117,6 +117,14 @@ Route::middleware('role:technician')->group(function () {
     // Route::get('/taskorders/{taskorder}/edit', [TaskOrderController::class, 'edit'])->name('taskorders.edit');
     // Route::put('/taskorders/{taskorder}', [TaskOrderController::class, 'update'])->name('taskorders.update');
     // Route::delete('/taskorders/{taskorder}', [TaskOrderController::class, 'destroy'])->name('taskorders.destroy');
+
+    Route::get('/taskorders/{task}', [TaskOrderController::class, 'addProgress'])->name('taskorders.add-progress');
+    Route::post('/taskorders/{task}', [TaskOrderController::class, 'storeProgress'])->name('taskorders.store-progress');
+
+    Route::get('profile', [ProfileController::class, 'editTeknisi'])->name('technician.profile.edit');
+    Route::patch('profile', [ProfileController::class, 'updateTeknisi'])->name('technician.profile.update');
+    Route::delete('profile', [ProfileController::class, 'destroy'])->name('technician.profile.destroy');
+
 });
 
 Route::middleware('auth')->group(function () {

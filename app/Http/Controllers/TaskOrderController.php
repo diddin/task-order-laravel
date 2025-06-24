@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\TaskOrder;
 use App\Http\Requests\StoreTaskOrderRequest;
 use App\Http\Requests\UpdateTaskOrderRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TaskOrderController extends Controller
@@ -94,5 +95,27 @@ class TaskOrderController extends Controller
 
         return redirect()->route('taskorders.index')
             ->with('success', 'Task progress deleted successfully.');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function addProgress(Task $task)
+    { 
+        //$taskOrder = TaskOrder::findOrFail($id);
+        //$task = Task::all();
+        return view($this->role.'.taskorders.add-progress', compact('task'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function storeProgress(Request $request, $id)
+    { dd($request->all());
+        $taskOrder = TaskOrder::findOrFail($id);
+        $taskOrder->update($request->validated());
+
+        return redirect()->route('taskorders.show', $taskOrder)
+            ->with('success', 'Task progress updated successfully.');
     }
 }

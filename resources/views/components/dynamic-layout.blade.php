@@ -9,7 +9,7 @@
         @include('layouts.navigation-master')
         <!-- Page Heading if isset x-slot name="header" on child -->
         @isset($header)
-            <header class="bg-white dark:bg-gray-800 shadow">
+            <header class="bg-white dark:bg-gray-800 shadow pl-64">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
@@ -22,7 +22,7 @@
         @include('layouts.navigation-admin')
         <!-- Page Heading if isset x-slot name="header" on child -->
         @isset($header)
-            <header class="bg-white dark:bg-gray-800 shadow">
+            <header class="bg-white dark:bg-gray-800 shadow pl-64">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
@@ -34,7 +34,7 @@
     <x-app-teknisi-layout :header="$header ?? null">
         <!-- Page Heading if isset x-slot name="header" on child -->
         @isset($header)
-            <header class="bg-white dark:bg-gray-800 shadow">
+            <header class="bg-white dark:bg-gray-800 shadow pl-64">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>

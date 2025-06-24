@@ -12,6 +12,4 @@
     @error('address') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
 </div>
 
-<button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
-    {{ isset($customer->id) ? 'Update' : 'Save' }}
-</button>
+<x-primary-button>{{ isset($customer->id) ? 'Update' : 'Simpan' }}</x-primary-button>

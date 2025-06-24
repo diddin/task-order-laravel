@@ -5,7 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    {{-- <div class="py-6"> --}}
+    <div class="flex-1 ml-64 p-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 p-6 sm:rounded-lg shadow-sm">
                 <form action="{{ route('master.tasks.update', $task) }}" method="POST">
