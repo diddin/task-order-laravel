@@ -7,6 +7,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -24,7 +26,6 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
-            // 'role' => Auth::user()->role->name,
         ]);
     }
 
@@ -44,6 +45,16 @@ class ProfileController extends Controller
     public function editAdmin(Request $request): View
     {
         return view('admin.profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Display the user's profile form.
+     */
+    public function editTeknisi(Request $request): View
+    {
+        return view('technician.profile.edit', [
             'user' => $request->user(),
         ]);
     }
@@ -69,7 +80,15 @@ class ProfileController extends Controller
      */
     public function updateMaster(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validated();
+
+        if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            // Masukkan path file ke data array (sesuai kolom di DB)
+            $validated['profile_image'] = $path;
+        }
+
+        $request->user()->fill($validated);
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
@@ -81,11 +100,19 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * Update the user's profile information. ProfileUpdateRequest
      */
     public function updateAdmin(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
+    { //dd($request->all());
+        $validated = $request->validated();
+
+        if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            // Masukkan path file ke data array (sesuai kolom di DB)
+            $validated['profile_image'] = $path;
+        }
+
+        $request->user()->fill($validated);
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
@@ -94,6 +121,30 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('admin.profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Update the user's profile information.
+     */
+    public function updateTeknisi(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            // Masukkan path file ke data array (sesuai kolom di DB)
+            $validated['profile_image'] = $path;
+        }
+
+        $request->user()->fill($validated);
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('technician.profile.edit')->with('status', 'profile-updated');
     }
 
     /**
@@ -111,9 +162,18 @@ class ProfileController extends Controller
 
         $user->delete();
 
+        // Mengambil yang sudah dihapus:
+        // User::onlyTrashed()->get();
+
+        // Mengambil semua (termasuk yang terhapus):
+        // User::withTrashed()->get();
+
+        // Mengembalikan user:
+        // $user->restore();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return Redirect::to('/login');
     }
 }

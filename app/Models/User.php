@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -19,9 +20,12 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
+        'phone_number',
         'password',
         'role_id',
+        'profile_image',
     ];
 
     /**
@@ -50,5 +54,19 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function assignedTasks() {
+        return $this->belongsToMany(Task::class, 'task_user_assignment')
+                    ->withPivot('role_in_task')
+                    ->withTimestamps();
+    }
+    
+    public function tasksAsPIC() {
+        return $this->assignedTasks()->wherePivot('role_in_task', 'pic');
+    }
+    
+    public function tasksAsOnsite() {
+        return $this->assignedTasks()->wherePivot('role_in_task', 'onsite');
     }
 }

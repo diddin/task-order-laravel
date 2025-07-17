@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 
 class AdminController extends Controller
 {
@@ -38,20 +40,26 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
+        $profileImage = null;
+        if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+            // Simpan file di storage/app/public/images dengan nama unik
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            // Masukkan path file ke data array (sesuai kolom di DB)
+            $profileImage = $path;
+        }
+    
         $user = User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
+            'phone_number' => $request->phone_number,
             'password' => Hash::make($request->password),
-            'role_id' =>  Role::where('name', 'admin')->first()->id,
+            'profile_image' => $profileImage,
+            'role_id' => Role::where('name', 'admin')->first()->id,
         ]);
+
         return to_route($this->role.'.admins.index')->with('status', 'Admin '.$user->name.' berhasil dibuat.');
     }
 
@@ -69,27 +77,38 @@ class AdminController extends Controller
     public function edit(User $user)
     {
         return view($this->role.'.admins.profile.edit', [
-            'admin' => $user,
+            'user' => $user,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-        ]);
+        $validated = $request->validated();
 
-        $user->fill($request->all());
+        if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+            // Simpan file di storage/app/public/images dengan nama unik
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            // Masukkan path file ke data array (sesuai kolom di DB)
+            $validated['profile_image'] = $path;
+        }
 
-        if ($user->isDirty('email')) {
+        // Set email_verified_at ke null jika email berubah
+        if ($user->email !== $validated['email']) {
             $user->email_verified_at = null;
         }
-        
-        $user->save();
+
+        // Update user
+        $user->update($validated);
+
+        // $user->fill($request->all());
+        // if ($user->isDirty('email')) {
+        //     $user->email_verified_at = null;
+        // }
+        // $user->save();
+
         return to_route($this->role.'.admins.index')->with('status', 'Admin '.$user->name.' berhasil di ubah.');
     }
 

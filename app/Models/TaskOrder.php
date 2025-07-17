@@ -13,6 +13,9 @@ class TaskOrder extends Model
     protected $fillable = [
         'task_id',
         'status',
+        'image',
+        'latitude',
+        'longitude',
     ];
 
     public function task()

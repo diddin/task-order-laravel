@@ -46,7 +46,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $customer->load(['networks.tasks.assignedUser']);
+        $customer->load(['networks.tasks.assignedUsers']);
         return view($this->role.'.customers.show', compact('customer'));
     }
 

@@ -11,8 +11,21 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = [
-        'detail', 'network_id', 'assigned_to', 'created_by', 'action',
+        'detail',
+        'network_id',
+        'created_by',
+        'action',
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($task) {
+            $year = now()->year;
+            $formattedId = str_pad($task->id, 9, '0', STR_PAD_LEFT);
+            $task->task_number = "{$year}-{$formattedId}";
+            $task->save();
+        });
+    }
 
     // Relasi ke Network
     public function network()
@@ -20,10 +33,20 @@ class Task extends Model
         return $this->belongsTo(Network::class);
     }
 
-    // User yang ditugaskan (nullable)
-    public function assignedUser()
-    {
-        return $this->belongsTo(User::class, 'assigned_to');
+    public function assignedUsers() {
+        return $this->belongsToMany(User::class, 'task_user_assignment')
+                    ->withPivot('role_in_task')
+                    ->withTimestamps();
+    }
+    
+    public function pic() {
+        // return $this->assignedUsers()->wherePivot('role_in_task', 'pic');
+        return $this->assignedUsers()->wherePivot('role_in_task', 'pic')->first();
+    }
+    
+    public function onsiteTeam() {
+        //return $this->assignedUsers()->wherePivot('role_in_task', 'onsite');
+        return $this->assignedUsers()->wherePivot('role_in_task', 'onsite')->get();
     }
 
     // User yang membuat task
@@ -37,5 +60,19 @@ class Task extends Model
         return $this->hasMany(TaskOrder::class);
     }
 
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('assigned_to', $userId);
+    }
+
+    public function scopeWithAction($query)
+    {
+        return $query->whereNotNull('action');
+    }
+
+    public function scopeWithoutAction($query)
+    {
+        return $query->whereNull('action');
+    }
     
 }

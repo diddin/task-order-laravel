@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('network_number');
             $table->text('detail')->nullable();
+            $table->string('access')->nullable();       // ✅ Kolom baru: akses
+            $table->text('data_core')->nullable();     // ✅ Kolom baru: data_core (textarea)
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

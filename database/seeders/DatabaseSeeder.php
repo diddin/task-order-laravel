@@ -19,6 +19,10 @@ class DatabaseSeeder extends Seeder
             NetworkSeeder::class,
             TaskSeeder::class,
             TaskOrderSeeder::class,
+            AssetSeeder::class,
+            AssetPortSeeder::class,
+            AssetImageSeeder::class,
+            ChatSeeder::class,
         ]);
     }
 }

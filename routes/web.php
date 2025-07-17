@@ -13,16 +13,27 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\AssetController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view(Auth::user()->role->name.'.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view(Auth::user()->role->name.'.dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::get('/dashboard', function () {
+//     return view(Auth::user()->role->name.'.dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('role:master')->prefix('master')->group(function () {
+
+    Route::get('dashboard', function () {
+        return view(Auth::user()->role->name.'.dashboard');
+    })->name('master.dashboard');
 
     Route::get('/register', [RegisteredUserController::class, 'createAccount'])
         ->name('registerAccount');
@@ -80,6 +91,11 @@ Route::middleware('role:master')->prefix('master')->group(function () {
 
 
 Route::middleware('role:admin')->prefix('admin')->group(function () {
+
+    Route::get('dashboard', function () {
+        return view(Auth::user()->role->name.'.dashboard');
+    })->name('admin.dashboard');
+
     Route::get('customers', [CustomerController::class, 'index'])->name('admin.customers.index');
     Route::get('customers/create', [CustomerController::class, 'create'])->name('admin.customers.create');
     Route::post('customers', [CustomerController::class, 'store'])->name('admin.customers.store');
@@ -118,8 +134,12 @@ Route::middleware('role:technician')->group(function () {
     // Route::put('/taskorders/{taskorder}', [TaskOrderController::class, 'update'])->name('taskorders.update');
     // Route::delete('/taskorders/{taskorder}', [TaskOrderController::class, 'destroy'])->name('taskorders.destroy');
 
-    Route::get('/taskorders/{task}', [TaskOrderController::class, 'addProgress'])->name('taskorders.add-progress');
-    Route::post('/taskorders/{task}', [TaskOrderController::class, 'storeProgress'])->name('taskorders.store-progress');
+    Route::get('dashboard', [TeknisiController::class, 'dashboard'])->name('technician.dashboard');
+
+    Route::get('tasks', [TaskController::class, 'index'])->name('technician.tasks.index');
+
+    Route::get('taskorders/{task}', [TaskOrderController::class, 'addProgress'])->name('technician.taskorders.add-progress');
+    Route::post('taskorders/{task}', [TaskOrderController::class, 'storeProgress'])->name('technician.taskorders.store-progress');
 
     Route::get('profile', [ProfileController::class, 'editTeknisi'])->name('technician.profile.edit');
     Route::patch('profile', [ProfileController::class, 'updateTeknisi'])->name('technician.profile.update');
@@ -128,9 +148,22 @@ Route::middleware('role:technician')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    
+    Route::delete('/profile/image', [ProfileController::class, 'destroyImage'])->name('profile.image.delete');
+
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('assets/{asset}', [AssetController::class, 'show'])->name('assets.show');
+    Route::post('assets', [AssetController::class, 'store'])->name('assets.store');
+    Route::put('assets/{asset}', [AssetController::class, 'update'])->name('assets.update');
+
+    //Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('chat', [ChatController::class, 'technicianMessages'])->name('chat.technician-index');
+    Route::post('chat', [ChatController::class, 'send'])->name('chat.send');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
 });
 
 require __DIR__.'/auth.php';

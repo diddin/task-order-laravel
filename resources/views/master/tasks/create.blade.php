@@ -5,14 +5,16 @@
         </h2>
     </x-slot>
 
-    {{-- <div class="py-6"> --}}
-    <div class="flex-1 p-6">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
+    <div class="flex-1 sm:ml-64 p-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 p-6 sm:rounded-lg shadow-sm">
-                <form action="{{ route('master.tasks.store') }}" method="POST">
-                    @csrf
-                    @include(Auth::user()->role->name.'.tasks._form', ['task' => new \App\Models\Task])
-                </form>
+                <x-task.form 
+                    :task="$task" 
+                    :networks="$networks" 
+                    :users="$users" 
+                    :pic="$pic" 
+                    :onsiteTeam="$onsiteTeam" 
+                />
             </div>
         </div>
     </div>

@@ -5,15 +5,10 @@
         </h2>
     </x-slot>
 
-    {{-- <div class="py-6"> --}}
-    <div class="flex-1 p-6">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
+    <div class="flex-1 sm:ml-64 p-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 p-6 shadow-sm sm:rounded-lg">
-                <form action="{{ route('master.networks.update', $network) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    @include(Auth::user()->role->name.'.networks._form', ['customers' => $customers])
-                </form>
+                <x-network.form :network="$network" :customers="$customers" />
             </div>
         </div>
     </div>

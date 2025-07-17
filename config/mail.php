@@ -111,8 +111,23 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'avara_company@example.com'),
+        'name' => env('MAIL_FROM_NAME', 'Avara'),
+    ],
+
+    'reply_to' => [
+        'address' => env('MAIL_REPLY_TO_ADDRESS', 'reply_to@example.com'),
+        'name' => env('MAIL_REPLY_TO_NAME', 'Avara Support'),
+    ],
+
+    'cc' => [
+        'address' => env('MAIL_CC_ADDRESS', 'cc_avara_company@example.com'),
+        'name' => env('MAIL_CC_NAME', 'Avara CC'),
+    ],
+
+    'bcc' => [
+        'address' => env('MAIL_BCC_ADDRESS', 'bcc_avara_company@example.com'),
+        'name' => env('MAIL_BCC_NAME', 'Avara BCC'),
     ],
 
 ];

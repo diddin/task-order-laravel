@@ -24,9 +24,11 @@ class StoreTaskRequest extends FormRequest
         return [
             'detail' => 'required|string|max:1000',
             'network_id' => 'required|exists:networks,id',
-            'assigned_to' => 'nullable|exists:users,id',
-            //'created_by' => 'required|exists:users,id',
-            'action' => 'nullable|in:null,in progress,completed',
+            'action' => 'nullable|in:in progress,completed',
+            
+            'pic_id' => 'required|exists:users,id',
+            'onsite_ids' => 'nullable|array',
+            'onsite_ids.*' => 'exists:users,id',
         ];
     }
 }

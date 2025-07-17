@@ -29,10 +29,22 @@ Jenis laporan:
 - Tiket: Melihat data status tiket dalam rentang waktu minggu/bulan.
 
 
+php artisan config:clear
 php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+=============================================
+
 php artisan config:clear
 php artisan view:clear
 php artisan route:clear
+php artisan optimize:clear
+
+rm public/hot
 
 
 Pertanyaan ini sangat penting, karena banyak orang keliru menggunakan load() vs with() — padahal fungsinya berbeda konteks dan bisa menimbulkan bug atau query tidak efektif.
@@ -98,3 +110,119 @@ $customer = Customer::find(1);
 $customer->load('networks');
 
 ❌ Jangan pakai Customer::load(...) — itu akan error.
+
+
+// To test the email sending functionality, you can use the following command in your terminal:
+// Make sure you have the necessary setup in your .env file for mail configuration.
+// Open your terminal and run the following command:
+
+
+==================================================================================================
+Test Email Sending in Laravel
+==================================================================================================
+php artisan tinker
+
+Mail::to('your@email.com')->send(new \App\Mail\TicketCreatedMail(\App\Models\Task::first()));
+
+=================================================================================================
+Custom Markdown Email di Laravel
+=================================================================================================
+Great! Kalau kamu ingin custom markdown email di Laravel, ada dua pendekatan:
+✅ Pendekatan 1: Publish Markdown Mail Views
+
+Laravel menyediakan komponen Blade khusus untuk markdown email (<x-mail::message>, <x-mail::button>, dll). Kalau kamu ingin mengubah style atau layout-nya, kamu harus publish view bawaannya ke project kamu, lalu edit sendiri.
+🔧 1. Jalankan Perintah Ini:
+
+php artisan vendor:publish --tag=laravel-mail
+
+    Ini akan menyalin file markdown mail ke:
+
+resources/views/vendor/mail/
+
+📁 Struktur Folder Hasilnya:
+
+resources/views/vendor/mail/
+├── html/
+│   ├── layout.blade.php       ← Layout HTML utama
+│   ├── message.blade.php      ← Komponen <x-mail::message>
+│   ├── button.blade.php       ← Komponen <x-mail::button>
+│   └── ...
+├── text/
+│   └── message.blade.php      ← Untuk versi teks (plain text)
+
+✏️ 2. Edit Komponen Sesuai Keinginan
+
+Misalnya kamu mau ubah desain tombol <x-mail::button>:
+🔧 Edit resources/views/vendor/mail/html/button.blade.php:
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+    <tr>
+        <td align="center">
+            <a href="{{ $url }}" target="_blank"
+            style="background-color:#e3342f;padding:12px 24px;color:#fff;text-decoration:none;border-radius:6px;">
+                {{ $slot }}
+            </a>
+        </td>
+    </tr>
+</table>
+
+    Kamu bisa ubah warna, padding, border-radius, dsb.
+
+🔧 Edit message.blade.php untuk header/footer layout
+
+Misalnya kamu ubah:
+
+<tr>
+    <td class="header">
+        <a href="{{ $url }}">
+            {{ $slot }}
+        </a>
+    </td>
+</tr>
+
+Jadi:
+
+<tr>
+    <td class="header" style="text-align: center; background-color: #f5f5f5;">
+        <img src="https://your-logo.png" height="50" alt="Your Logo">
+    </td>
+</tr>
+
+✅ Pendekatan 2: Custom Markdown View Per Email
+
+Kalau kamu mau custom markdown hanya untuk 1 tipe email, kamu bisa buat file markdown sendiri.
+
+Misalnya:
+📄 resources/views/emails/tickets/created.blade.php
+
+<x-mail::message>
+# Hello, {{ $ticket->user->name }}
+
+A new ticket has been created:
+
+- **Title**: {{ $ticket->title }}
+- **Description**: {{ $ticket->description }}
+
+<x-mail::button :url="url('/tickets/' . $ticket->id)">
+View Ticket
+</x-mail::button>
+
+Thanks,<br>
+{{ config('app.name') }}
+</x-mail::message>
+
+    Di file ini, kamu tetap bisa pakai <x-mail::...> tapi dengan konten custom.
+
+🔁 Kombinasi Markdown + Custom Style
+
+Kalau kamu publish komponen dan pakai markdown, kamu bisa gabungkan keduanya:
+
+    Buat email view markdown (emails.tickets.created)
+
+    Custom tampilannya via vendor/mail/html/*
+
+💡 Kesimpulan
+Opsi	Tujuan	Cara
+Publish markdown komponen Laravel	Ubah tampilan seluruh email secara global	php artisan vendor:publish --tag=laravel-mail
+Custom markdown per email	Ubah konten email tertentu (pakai <x-mail::message>)	Buat view di resources/views/emails/
+Gunakan HTML langsung	Full kontrol tanpa markdown	Gunakan view: 'emails.tickets.created' dan Blade biasa

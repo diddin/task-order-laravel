@@ -1,3 +1,403 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input:focus-visible {
+    @apply shadow-none outline-none;
+}
+body {
+    @apply relative;
+}
+
+.container {
+    font-family: 'Poppins', sans-serif;
+    @apply relative max-w-3xl mx-auto;
+}
+
+.avara-logo {
+    @apply flex;
+}
+.avara-logo img {
+    max-width: 112px;
+    @apply w-full;
+}
+
+/* LOGIN PAGE */
+.login-page {
+    @apply relative grid content-center h-full min-h-screen;
+}
+.login-page::before {
+    background-image: url('@/images/bg-login.png');
+    background-position-x: center;
+    background-position-y: 25%;
+    content: "";
+    @apply absolute top-0 left-0 right-0 bg-no-repeat bg-cover h-2/3 -z-10;
+}
+.login-page::after {
+    content: "";
+    @apply absolute bottom-0 left-0 right-0 bg-gray-700 bg-no-repeat bg-cover -z-10 h-1/3;
+}
+.login-page .avara-logo img {
+    max-width: 190px;
+}
+.login-page .wrapper {
+    @apply mx-4 my-14;
+}
+.login-content {
+    @apply max-w-lg px-4 py-8 mx-auto mt-16 bg-white shadow-md rounded-2xl;
+}
+.login-content h1 {
+    @apply mb-6 text-center text-gray-700;
+}
+.input-group-icon {
+    @apply grid mb-4;
+}
+.input-group-icon input {
+    @apply w-full col-start-1 row-start-1 p-3 text-sm leading-6 text-gray-700 bg-white border border-gray-200 rounded-lg pr-9;
+}
+.input-group-icon .icon {
+    @apply self-center col-start-1 row-start-1 mr-3 text-xl text-gray-400 justify-self-end;
+}
+.input-group {
+    @apply grid;
+}
+.input-group.input-inline {
+    @apply flex items-center justify-between
+}
+.input-group label {
+    @apply mb-2 text-xs font-semibold text-gray-600;
+}
+.input-group input {
+    @apply w-full p-3 text-sm leading-6 text-gray-600 bg-white border border-gray-200 rounded-lg;
+}
+.input-group.input-inline input {
+    @apply w-28;
+}
+.input-group .select-grid {
+    @apply grid grid-cols-2 gap-2;
+}
+.input-group .select-grid select {
+    background-image: url('@/images/arrow-down.png');
+    background-position: calc(100% - 8px);
+    background-size: 24px;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    @apply w-full p-3 text-xs leading-6 text-gray-700 bg-white bg-no-repeat border border-gray-200 rounded-lg;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+    color: rgba(0, 0, 0, 0);
+    background: url('@/images/calendar-2-fill.svg') no-repeat;
+    background-size: 20px;
+    border-width: thin;
+    @apply block w-5 h-5 text-gray-600 opacity-100;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+.input-group textarea {
+    @apply block w-full p-3 overflow-y-scroll text-sm text-left text-gray-600 bg-white border border-gray-200 rounded-lg resize-none h-72;
+}
+.btn-primary {
+    @apply p-3 font-bold text-white bg-blue-700 text-base rounded-3xl min-w-[190px] table mx-auto text-center;
+}
+.btn-secondary {
+    @apply text-sm bg-gray-200 text-blue-700 p-3 min-w-[190px] table text-center rounded-full font-normal;
+}
+.btn-icon {
+    @apply py-2;
+}
+.btn-icon span {
+    @apply mr-1 text-lg align-middle;
+}
+.btn-disabled {
+    @apply font-bold text-gray-400;
+}
+
+@media (max-width: 575px) {
+    .btn-primary,
+    .btn-secondary {
+        min-width: 130px;
+    }
+}
+/* HEADER */
+.avara-header {
+    @apply fixed top-0 left-0 right-0 z-50 bg-white shadow-md;
+}
+.header-profile {
+    @apply flex items-center text-gray-600 gap-x-1;
+}
+.header-profile .photo {
+    @apply rounded-full border-[3px] border-white;
+}
+.header-profile .photo img {
+    @apply object-cover w-8 h-8 rounded-full;
+}
+.profile-name span {
+    @apply block text-[10px] leading-none;
+}
+.profile-name span.name {
+    @apply text-xs font-bold;
+}
+.header-notif {
+    @apply relative flex items-center justify-center w-8 h-8 text-white bg-orange-700 rounded-full;
+}
+.header-notif .notif {
+    @apply absolute flex items-center justify-center w-4 h-4 text-xs text-white bg-orange-700 rounded-full -right-1 -top-1;
+}
+.header-menu span {
+    @apply text-xl text-blue-700;
+}
+
+/* KEYBOARD */
+.avara-keyboard,
+.button-bottom {
+    @apply fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-t-gray-300;
+}
+.button-content {
+    @apply flex items-center justify-between gap-4 px-5 py-4;
+}
+.avara-keyboard form {
+    @apply px-5 py-4 ;
+}
+.avara-keyboard .input-group-icon {
+    @apply m-0;
+}
+.avara-keyboard .input-group-icon .ri-send-plane-fill {
+    @apply text-blue-700;
+}
+.input-group-icon .icon.icon-start {
+    z-index: 2;
+    @apply ml-3 mr-0 justify-self-start;
+}
+.avara-keyboard .input-group-icon input {
+    @apply px-11;    
+}
+.avara-keyboard.contact .input-group-icon input {
+    @apply pl-3;
+}
+
+/* NAVBAR */
+.navbar-content {
+    min-width: 180px;
+    z-index: 999999;
+    transition: all ease-out 0.3s;
+    -moz-transition: all ease-out 0.3s;
+    -webkit-transition: all ease-out 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    @apply absolute top-[62px] py-5 bg-gray-600 right-4 rounded-lg;
+}
+.navbar-content.show {
+    pointer-events: auto;
+    opacity: 1;
+}
+.navbar-list {
+    @apply grid gap-y-3;
+}
+.navbar-list li a {
+    @apply block px-4 text-sm text-right text-white;
+}
+
+/* CONTENT */
+body {
+    padding-bottom: 83px;
+    padding-top: 62px;
+}
+body.without-keyboard {
+    padding-bottom: 0;
+}
+body.login-page {
+    @apply p-0 m-0;
+}
+.body-content {
+    min-height: calc(100vh - 83px - 62px);
+    @apply py-5 bg-gray-50;
+}
+body.without-keyboard .body-content {
+    min-height: calc(100vh - 62px);
+}
+.body-content .wrapper {
+    @apply flex flex-col px-5 mb-8 gap-y-2;
+}
+.body-content .wrapper h3 {
+    @apply text-base font-semibold leading-6 text-gray-700;
+}
+.group-between {
+    @apply flex items-center justify-between text-xs font-semibold gap-x-2;
+}
+.content-shadow {
+    @apply p-4 text-gray-600 bg-white rounded-lg shadow-md;
+}
+.content-shadow h2 {
+    @apply mb-2 text-base font-semibold text-gray-700;
+}
+.content-shadow h5 {
+    @apply mb-4 text-sm text-gray-700;
+}
+.content-shadow p {
+    @apply text-sm leading-6 text-gray-600;
+}
+.icon-text {
+    @apply flex mb-2 text-xs gap-x-2;
+}
+.icon-text:last-child {
+    @apply mb-0;
+}
+.content-shadow .eta-footer {
+    @apply pt-4 mt-4 border-t border-gray-300;
+}
+.back-to {
+    @apply flex items-center mb-8 text-sm text-gray-700 gap-x-2;
+}
+.detail-text {
+    @apply mb-2 text-sm leading-6 text-gray-600;
+}
+.detail-text span {
+    @apply block text-xs font-semibold;
+}
+.detail-text .icon-text {
+    @apply items-center justify-between;
+}
+.detail-text .icon-text span,
+.detail-text .icon-text a {
+    @apply text-xl text-gray-400;
+}
+.pic-content {
+    @apply grid mt-4 gap-y-2;
+}
+.pic-content h4 {
+    @apply text-xs font-semibold text-gray-600;
+}
+.pic-item {
+    @apply flex items-center justify-between gap-2 p-2 bg-gray-100 rounded;
+}
+.pic-name,
+.pic-contact {
+    @apply flex items-center gap-1;
+}
+.pic-name img {
+    @apply object-cover w-8 h-8 rounded-full;
+}
+.pic-name span {
+    @apply text-sm to-gray-700
+}
+.pic-contact {
+    @apply gap-3 text-2xl;
+}
+.date {
+    font-family: 'Inter', sans-serif;
+    @apply bg-gray-300 text-gray-700 text-[11px] rounded table py-1 px-2 text-center mx-auto;
+}
+.detail-tiket .date {
+    z-index: 1;
+    @apply relative ml-0 mr-auto;
+}
+.content-update {
+    @apply relative grid gap-2;
+}
+.content-update::before {
+    content: "";
+    z-index: 0;
+    @apply absolute h-full border-l border-dashed left-2;
+}
+.update-item {
+    @apply relative grid gap-2 p-4 ml-6 bg-white rounded-lg shadow-md;
+}
+.update-item:before {
+    content: "";
+    z-index: 1;
+    margin-left: -19px;
+    @apply absolute top-0 bottom-0 left-0 w-2 h-2 my-auto bg-blue-700 rounded-full;
+}
+.update-item span {
+    @apply block text-xs text-gray-600;
+}
+.time {
+    font-family: 'Inter', sans-serif;
+    @apply block text-xs text-gray-600;
+}
+.update-item p {
+    @apply text-sm leading-6 text-gray-700;
+}
+.update-item img {
+    @apply w-full my-1 rounded;
+}
+.chat-perdate {
+    @apply grid gap-4 mb-8;
+}
+.chat-perdate .time {
+    @apply font-semibold;
+}
+.chat-perdate .chat-sent .time {
+    @apply text-white;
+}
+.chat-detail {
+    @apply grid gap-2 p-4 text-sm text-gray-600 shadow-md rounded-2xl;
+}
+.chat-sent,
+.chat-received {
+    @apply inline-block w-auto;
+}
+.chat-sent {
+    @apply ml-auto;
+}
+.chat-received {
+    @apply mr-auto;
+}
+.chat-sent .chat-detail {
+    @apply text-white bg-gray-600 rounded-br-none;
+}
+.chat-received .chat-detail {
+    @apply bg-white rounded-bl-none;
+}
+
+.item-asset {
+    @apply grid py-4 border-t border-gray-300 gap-y-4;
+}
+.item-asset:first-child {
+    @apply border-none;
+}
+.item-asset .img-asset {
+    @apply flex items-center w-full max-w-full pb-2 overflow-x-scroll gap-x-2;
+}
+.item-asset .img-asset img {
+    @apply object-cover w-20 h-20 rounded-lg;
+}
+.item-asset .input-file {
+    @apply relative flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-lg;
+}
+.item-asset .input-file .btn-upload {
+    @apply inline-block px-4 py-2 text-sm text-center text-gray-600 transition duration-300 bg-gray-300 rounded-lg cursor-pointer;
+}
+.item-asset .input-file .name_file span {
+    @apply px-2 text-xs text-center text-gray-600 break-words;
+}
+/* MODAL POPUP */
+#modalOverlay {
+    @apply fixed inset-0 z-50 items-center justify-center p-4 bg-black bg-opacity-50;
+}
+#modalContainer {
+    @apply grid w-full max-w-md gap-2 p-6 mx-2 text-center transition-all duration-300 transform bg-white rounded-lg shadow-md;
+}
+#modalFooter {
+    @apply flex items-center justify-center mt-4;
+}
+#modalContainer h3 {
+    @apply text-base font-semibold text-gray-700;
+}
+#modalContainer span {
+    @apply text-base font-semibold text-green-700;
+}
+#modalContainer p {
+    @apply text-sm text-gray-600;
+}

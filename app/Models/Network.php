@@ -21,4 +21,9 @@ class Network extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    public function asset()
+    {
+        return $this->hasOne(Asset::class);
+    }
 }

@@ -81,8 +81,10 @@ class TaskOrderController extends Controller
         $taskOrder = TaskOrder::findOrFail($id);
         $taskOrder->update($request->validated());
 
-        return redirect()->route('taskorders.show', $taskOrder)
-            ->with('success', 'Task progress updated successfully.');
+        // return redirect()->route('taskorders.show', $taskOrder)
+        //     ->with('success', 'Task progress updated successfully.');
+        return redirect()->route('technician.taskorders.add-progress', $taskOrder->task_id)
+            ->with('success', 'Task progress berhasil di perbarui.');
     }
 
     /**
@@ -101,21 +103,54 @@ class TaskOrderController extends Controller
      * Show the form for editing the specified resource.
      */
     public function addProgress(Task $task)
-    { 
-        //$taskOrder = TaskOrder::findOrFail($id);
-        //$task = Task::all();
+    {
+        if ($task) {
+            $deadline = $task->created_at->copy()->addHours(6);
+        
+            if (now()->lessThanOrEqualTo($deadline)) {
+                $task->remaining = now()->locale('id')->diffForHumans($deadline, [
+                    'parts' => 2,
+                    'join' => true,
+                ]) . ' tersisa';
+
+                $task->remaining = str_replace('dan', '', $task->remaining);
+                $task->remaining = str_replace('sebelumnya', '', $task->remaining);
+            } else {
+                $task->remaining = 'Tidak Tercapai';
+            }
+        } else {
+            return redirect()->route('technicians.dashboard')
+                ->with('error', 'Task not found.');
+        }
+
+        //return view($this->role.'.taskorders.add-progress-new', compact('task'));
+
         return view($this->role.'.taskorders.add-progress', compact('task'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function storeProgress(Request $request, $id)
-    { dd($request->all());
-        $taskOrder = TaskOrder::findOrFail($id);
-        $taskOrder->update($request->validated());
 
-        return redirect()->route('taskorders.show', $taskOrder)
-            ->with('success', 'Task progress updated successfully.');
+    public function storeProgress(StoreTaskOrderRequest $request, Task $task)
+    {
+        $data = $request->validated();
+
+        // Jika ada file gambar upload
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Simpan file di storage/app/public/images dengan nama unik
+            $path = $request->file('image')->store('images', 'public');
+
+            // Masukkan path file ke data array (sesuai kolom di DB)
+            $data['image'] = $path;
+        }
+
+        // Pastikan task_id diisi dengan ID $task (biar tidak asal dari input client)
+        $data['task_id'] = $task->id;
+
+        TaskOrder::create($data);
+
+        return redirect()->route('technician.taskorders.add-progress', $task->id)
+            ->with('success', 'Task progress berhasil di perbarui.');
     }
 }

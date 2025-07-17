@@ -15,6 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('task_id')->constrained()->onDelete('cascade');
             $table->text('status');
+
+            // Kolom tambahan
+            $table->string('image')->nullable();         // Path gambar (nullable)
+            $table->decimal('latitude', 10, 7);          // Latitude (presisi umum GPS)
+            $table->decimal('longitude', 10, 7);         // Longitude
+
             $table->timestamps();
         });
     }
