@@ -44,4 +44,4 @@ echo "🚀 Deployment finished!"
 
 
 # chmod +x full-deploy.sh
-# ./deploy.sh
+# ./full-deploy.sh

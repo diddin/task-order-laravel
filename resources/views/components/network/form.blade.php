@@ -13,28 +13,47 @@
 
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">No. Jaringan</label>
-        <input type="text" name="network_number" value="{{ old('network_number', $network->network_number) }}"
-               class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white" placeholder="e.g. 192.168.1.1">
+        <input type="text" name="network_number" value="{{ old('network_number', $network->network_number ?? '') }}"
+               class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white" placeholder="no jaringan">
         @error('network_number')
             <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
         @enderror
     </div>
-
+    
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Detail</label>
-        <textarea name="detail" rows="3" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">{{ old('detail', $network->detail) }}</textarea>
+        <textarea placeholder="detail jaringan" name="detail" rows="3"
+                  class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">{{ old('detail', $network->detail ?? '') }}</textarea>
         @error('detail')
             <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
         @enderror
     </div>
-
+    
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Akses</label>
+        <input type="text" name="access" value="{{ old('access', $network->access ?? '') }}"
+               class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white" placeholder="akses jaringan">
+        @error('access')
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+    
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Data Core</label>
+        <textarea placeholder="data core jaringan" name="data_core" rows="4"
+                  class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">{{ old('data_core', $network->data_core ?? '') }}</textarea>
+        @error('data_core')
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+    
     <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Pelanggan</label>
         <select name="customer_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
             <option value="">-- Pilih Pelanggan --</option>
             @foreach($customers as $customer)
                 <option value="{{ $customer->id }}"
-                    {{ old('customer_id', $network->customer_id) == $customer->id ? 'selected' : '' }}>
+                    {{ old('customer_id', $network->customer_id ?? '') == $customer->id ? 'selected' : '' }}>
                     {{ $customer->name }}
                 </option>
             @endforeach
@@ -44,5 +63,11 @@
         @enderror
     </div>
 
-    <x-primary-button>{{ $isUpdate ? 'Update' : 'Simpan' }}</x-primary-button>
+    <div class="flex items-center">
+        <x-primary-button>{{ $isUpdate ? 'Update' : 'Simpan' }}</x-primary-button>
+        <a href="{{ route($prefix . '.networks.index') }}"
+            class="inline-flex items-center px-4 py-2 bg-gray-500 text-white border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-2">
+            Kembali
+        </a>
+    </div>
 </form>

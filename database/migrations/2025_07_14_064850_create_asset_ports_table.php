@@ -16,7 +16,8 @@ return new class extends Migration
 
             $table->foreignId('asset_id')->constrained()->onDelete('cascade');
             $table->string('port');    // contoh: "PORT 1", "P2", dst
-            $table->foreignId('jumper_id')->nullable()->constrained('asset_ports')->nullOnDelete();
+            $table->string('jumper_id')->nullable();
+            //$table->foreignId('jumper_id')->nullable()->constrained('asset_ports')->nullOnDelete();
 
             $table->timestamps();
         });

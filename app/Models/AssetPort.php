@@ -15,4 +15,9 @@ class AssetPort extends Model
     {
         return $this->belongsTo(Asset::class);
     }
+
+    public function jumper()
+    {
+        return $this->belongsTo(AssetPort::class, 'jumper_id');
+    }
 }

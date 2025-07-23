@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\Rules;
-use Illuminate\Validation\Rule;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Models\Task;
@@ -35,7 +33,7 @@ class TeknisiController extends Controller
     {
         $technician = Auth::user(); //dd($technician->id);
 
-        $newTasks = Task::with(['network', 'assignedUser', 'creator'])
+        $newTasks = Task::with(['network', 'assignedUsers', 'creator'])
             ->forUser($technician->id)
             ->withoutAction()
             ->latest()
@@ -59,7 +57,7 @@ class TeknisiController extends Controller
             return $task;
         });
 
-        $myActivities = Task::with(['network', 'assignedUser', 'creator'])
+        $myActivities = Task::with(['network', 'assignedUsers', 'creator'])
             ->forUser($technician->id)
             ->withAction()
             ->latest()
@@ -72,7 +70,7 @@ class TeknisiController extends Controller
         ];
 
         // echo "<pre>";
-        // print_r($newTasks->toArray());
+        // print_r($myActivities->toArray());
         // echo "</pre>";die();
 
         return view($this->role.'.dashboard', compact('technician', 'tasks'));

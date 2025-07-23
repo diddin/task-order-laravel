@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\TaskOrder;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTaskOrderRequest extends FormRequest
+class TaskOrderStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -12,8 +12,8 @@ class UpdateTaskOrderRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
-        // Sesuaikan dengan logic akses, misalnya hanya user yang login:
-        // return auth()->check();
+        // Sesuaikan dengan logic auth kamu, misal cuma user tertentu yang boleh:
+        //return auth()->check();
     }
 
     /**
@@ -24,9 +24,9 @@ class UpdateTaskOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'task_id'   => ['required', 'exists:tasks,id'],
+            //'task_id'   => ['required', 'exists:tasks,id'],
             'status'    => ['required', 'string', 'max:1000'],
-            'image'     => ['nullable', 'image', 'max:2048'], // opsional, max 2MB
+            'image'     => ['nullable', 'image', 'max:2048'], // max 2MB
             'latitude'  => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
         ];
@@ -40,7 +40,7 @@ class UpdateTaskOrderRequest extends FormRequest
             'status.required'    => 'Status progres harus diisi.',
             'status.string'      => 'Status harus berupa teks.',
             'status.max'         => 'Status maksimal 1000 karakter.',
-            'image.image'        => 'File harus berupa gambar (jpeg, png, dll).',
+            'image.image'        => 'File harus berupa gambar.',
             'image.max'          => 'Ukuran gambar maksimal 2MB.',
             'latitude.required'  => 'Latitude harus diisi.',
             'latitude.numeric'   => 'Latitude harus berupa angka.',

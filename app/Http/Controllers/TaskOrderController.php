@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\TaskOrder;
-use App\Http\Requests\StoreTaskOrderRequest;
-use App\Http\Requests\UpdateTaskOrderRequest;
+use App\Http\Requests\TaskOrder\TaskOrderStoreRequest;
+use App\Http\Requests\TaskOrder\TaskOrderUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,7 +39,7 @@ class TaskOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskOrderRequest $request)
+    public function store(TaskOrderStoreRequest $request)
     {
         TaskOrder::create($request->validated());
 
@@ -76,14 +76,14 @@ class TaskOrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskOrderRequest $request, $id)
+    public function update(TaskOrderUpdateRequest $request, $id)
     { 
         $taskOrder = TaskOrder::findOrFail($id);
         $taskOrder->update($request->validated());
 
         // return redirect()->route('taskorders.show', $taskOrder)
         //     ->with('success', 'Task progress updated successfully.');
-        return redirect()->route('technician.taskorders.add-progress', $taskOrder->task_id)
+        return redirect()->route('technician.taskorders.progress', $taskOrder->task_id)
             ->with('success', 'Task progress berhasil di perbarui.');
     }
 
@@ -113,8 +113,9 @@ class TaskOrderController extends Controller
                     'join' => true,
                 ]) . ' tersisa';
 
-                $task->remaining = str_replace('dan', '', $task->remaining);
-                $task->remaining = str_replace('sebelumnya', '', $task->remaining);
+                // $task->remaining = str_replace('dan', '', $task->remaining);
+                // $task->remaining = str_replace('sebelumnya', '', $task->remaining);
+                $task->remaining = trim(str_replace(['dan', 'sebelumnya'], '', $task->remaining));
             } else {
                 $task->remaining = 'Tidak Tercapai';
             }
@@ -123,16 +124,16 @@ class TaskOrderController extends Controller
                 ->with('error', 'Task not found.');
         }
 
-        //return view($this->role.'.taskorders.add-progress-new', compact('task'));
+        //return view($this->role.'.taskorders.progress-new', compact('task'));
 
-        return view($this->role.'.taskorders.add-progress', compact('task'));
+        return view($this->role.'.taskorders.progress', compact('task'));
     }
 
     /**
      * Update the specified resource in storage.
      */
 
-    public function storeProgress(StoreTaskOrderRequest $request, Task $task)
+    public function storeProgress(TaskOrderStoreRequest $request, Task $task)
     {
         $data = $request->validated();
 
@@ -150,7 +151,7 @@ class TaskOrderController extends Controller
 
         TaskOrder::create($data);
 
-        return redirect()->route('technician.taskorders.add-progress', $task->id)
+        return redirect()->route('technician.taskorders.progress', $task->id)
             ->with('success', 'Task progress berhasil di perbarui.');
     }
 }

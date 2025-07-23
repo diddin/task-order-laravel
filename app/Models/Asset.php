@@ -25,8 +25,8 @@ class Asset extends Model
         'pop',
         'olt',
         'number_of_ports',
-        'number_of_registered_ports',
-        'number_of_registered_labels', // perhatikan typo jika perlu
+        // 'number_of_registered_ports', // Hapus ini jika ingin pakai accessor
+        'number_of_registered_labels',
         'network_id',
     ];
 
@@ -44,5 +44,11 @@ class Asset extends Model
     {
         return $this->hasMany(AssetPort::class);
     }
-    
+
+    // accessor
+    public function getNumberOfRegisteredPortsAttribute()
+    {
+        return $this->ports()->whereNotNull('jumper_id')->count();
+    }
+        
 }

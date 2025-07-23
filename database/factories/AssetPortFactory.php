@@ -22,7 +22,7 @@ class AssetPortFactory extends Factory
     {
         return [
             'asset_id' => Asset::inRandomOrder()->first()?->id,
-            'port' => 'PORT ' . $this->faker->unique()->numberBetween(1, 100),
+            'port' => $this->faker->unique()->numberBetween(1, 96),
             'jumper_id' => null, // default null, diatur kemudian
         ];
     }

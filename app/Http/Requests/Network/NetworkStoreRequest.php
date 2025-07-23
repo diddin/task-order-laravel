@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Network;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreNetworkRequest extends FormRequest
+class NetworkStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +24,8 @@ class StoreNetworkRequest extends FormRequest
         return [
             'network_number' => 'required|',
             'detail' => 'nullable|string|max:1000',
+            'access' => 'nullable|string|max:10000',
+            'data_core' => 'nullable|string|max:10000',
             'customer_id' => 'required|exists:customers,id',
         ];
     }

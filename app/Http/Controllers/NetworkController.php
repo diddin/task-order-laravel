@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Network;
 use App\Models\Customer;
-use App\Http\Requests\StoreNetworkRequest;
-use App\Http\Requests\UpdateNetworkRequest;
+use App\Http\Requests\Network\NetworkStoreRequest;
+use App\Http\Requests\Network\NetworkUpdateRequest;
 use Illuminate\Support\Facades\Auth;
 
 class NetworkController extends Controller
@@ -38,10 +38,11 @@ class NetworkController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreNetworkRequest $request)
+    public function store(NetworkStoreRequest $request)
     {
         Network::create($request->validated());
-        return redirect()->route('networks.index')->with('success', 'Network created.');
+        return redirect()->route($this->role.'.networks.index')
+            ->with('success', 'Jaringan '.$request->network_number .' berhasil ditambahkan.');
     }
 
     /**
@@ -64,10 +65,11 @@ class NetworkController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNetworkRequest $request, Network $network)
+    public function update(NetworkUpdateRequest $request, Network $network)
     {
         $network->update($request->validated());
-        return redirect()->route('networks.index')->with('success', 'Network updated.');
+        return redirect()->route($this->role.'.networks.index')
+            ->with('success', 'Jaringan '.$network->network_number .' berhasil diperbarui.');
     }
 
     /**
@@ -76,6 +78,7 @@ class NetworkController extends Controller
     public function destroy(Network $network)
     {
         $network->delete();
-        return redirect()->route('networks.index')->with('success', 'Network deleted.');
+        return redirect()->route($this->role.'.networks.index')
+            ->with('success', 'Jaringan '.$network->network_number .' berhasil dihapus.');
     }
 }

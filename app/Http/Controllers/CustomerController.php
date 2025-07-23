@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Requests\Customer\CustomerStoreRequest;
+use App\Http\Requests\Customer\CustomerUpdateRequest;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
@@ -35,10 +35,11 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCustomerRequest $request)
+    public function store(CustomerStoreRequest $request)
     {
         Customer::create($request->validated());
-        return redirect()->route($this->role.'.customers.index')->with('success', 'Customer created.');
+        return redirect()->route($this->role.'.customers.index')
+            ->with('success', 'Data Pelanggan '.$request->name.' berhasil ditambahkan.');
     }
 
     /**
@@ -61,10 +62,11 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCustomerRequest $request, Customer $customer)
+    public function update(CustomerUpdateRequest $request, Customer $customer)
     {
         $customer->update($request->validated());
-        return redirect()->route($this->role.'.customers.index')->with('success', 'Customer updated.');
+        return redirect()->route($this->role.'.customers.index')
+            ->with('success', 'Data Pelanggan '.$customer->name.' berhasil diperbarui.');
     }
 
     /**
@@ -73,6 +75,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return redirect()->route($this->role.'.customers.index')->with('success', 'Customer deleted.');
+        return redirect()->route($this->role.'.customers.index')
+            ->with('success', 'Data Pelanggan '.$customer->name.' berhasil dihapus.');
     }
 }

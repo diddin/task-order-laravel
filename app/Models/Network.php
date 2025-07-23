@@ -10,7 +10,7 @@ class Network extends Model
     /** @use HasFactory<\Database\Factories\NetworkFactory> */
     use HasFactory;
     
-    protected $fillable = ['network_number', 'detail', 'customer_id'];
+    protected $fillable = ['network_number', 'detail', 'access', 'data_core', 'customer_id'];
 
     public function customer()
     {

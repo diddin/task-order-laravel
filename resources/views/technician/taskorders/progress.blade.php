@@ -40,64 +40,75 @@
                     <div class="whitespace-pre-wrap border border-gray-300 p-2 w-100 min-h-[100px] font-mono bg-gray-50 overflow-y-auto">
                         <?= htmlspecialchars($task->network->data_core ?? '') ?>
                     </div>
-                    {{-- <form action="" class="mt-2">
-                        <div class="input-group">
-                            <textarea name="data_core" class="text-left form-control" rows="8">
-                                {{ old('data_core', $task->network->data_core ?? '') }}
-                            </textarea>
-                        </div>
-                    </form> --}}
                 </div>
                 <div class="group-between">
-                    <span class="text-gray-600">Data Asset</span>
-                    <a href="{{ route('assets.show', $task->network->asset) }}" class="btn-secondary">Lihat Data Asset</a>
+                    <span class="text-gray-600">Data Aset</span>
+                    <a href="{{ route('assets.show', [$task->network->asset, $task]) }}" class="btn-secondary">Lihat Data Aset</a>
                 </div>
                 
                 <div class="pic-content">
                     <h4>PIC</h4>
                     <div class="pic-item">
                         <div class="pic-name">
-                            <img src="{{ asset('images/pic1.png') }}" alt="photo profile">
-                            <span>Suryanto Wilogo</span>
+                            <img src="{{ asset('storage/' . $task->pic()->profile_image) }}" alt="photo profile">
+                            <span>{{ $task->pic()->name }}</span>
                         </div>
                         <div class="pic-contact">
-                            <a href="#" class="block text-gray-600"><span class="ri-phone-line"></span></a>
-                            <a href="#" class="block text-green-700"><span class="ri-whatsapp-line"></span></a>
-                        </div>
-                    </div>
-                    <div class="pic-item">
-                        <div class="pic-name">
-                            <img src="{{ asset('images/pic2.png') }}" alt="photo profile">
-                            <span>Farhan Syafroni</span>
-                        </div>
-                        <div class="pic-contact">
-                            <a href="#" class="block text-gray-600"><span class="ri-phone-line"></span></a>
-                            <a href="#" class="block text-green-700"><span class="ri-whatsapp-line"></span></a>
+                            {{-- <a href="tel:{{ $task->pic()->phone_number }}" class="block text-gray-600">
+                                <span class="ri-phone-line"></span>
+                            </a> --}}
+                            <a href="https://wa.me/{{ $task->pic()->phone_number }}" class="block text-green-700">
+                                <span class="ri-whatsapp-line"></span>
+                            </a>
                         </div>
                     </div>
                 </div>
                 <div class="pic-content">
                     <h4>Tim Onsite</h4>
-                    <div class="pic-item">
-                        <div class="pic-name">
-                            <img src="{{ asset('images/pic3.png') }}" alt="photo profile">
-                            <span>Justin Fernando</span>
+                    @foreach ($task->onsiteTeam() as $member)
+                        <div class="pic-item">
+                            <div class="pic-name">
+                                <img src="{{ asset('storage/' . $member->profile_image) }}" alt="photo profile">
+                                <span>{{ $member->name }}</span> {{-- Sesuaikan field nama user --}}
+                            </div>
+                            <div class="pic-contact">
+                                {{-- <a href="tel:{{ $member->phone }}" class="block text-gray-600">
+                                    <span class="ri-phone-line"></span>
+                                </a> --}}
+                                <a href="https://wa.me/{{ $member->phone }}" class="block text-green-700">
+                                    <span class="ri-whatsapp-line"></span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="pic-contact">
-                            <a href="#" class="block text-gray-600"><span class="ri-phone-line"></span></a>
-                            <a href="#" class="block text-green-700"><span class="ri-whatsapp-line"></span></a>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
                 
                 <div class="eta-footer group-between">
-                    <span class="text-gray-700">ETA: 12:00</span>
+                    <span class="text-gray-700">
+                        ETA: {{ $task->created_at->copy()->addHours(6)->format('d M Y H:i') }}
+                    </span>
                     <span class="text-red-700">{{ $task->remaining }}</span>
                 </div>
 
-                <button id="openModal" class="w-full mt-4 btn-primary">PEKERJAAN SELESAI</button>
+                <form action="{{ route('technician.task.complete', $task->id) }}" method="POST" id="completeForm">
+                    @csrf
+                    <button type="button" id="openModal" class="w-full mt-4 btn-primary">PEKERJAAN SELESAI</button>
+                </form>
             </div>
         </div>
+        <!-- Modal Overlay -->
+        <div id="modalOverlay" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div id="modalContainer" class="bg-white p-6 rounded-lg w-80 transform scale-95 opacity-0 transition-all duration-300">
+                <h3 class="text-lg font-semibold mb-2">Terima Kasih</h3>
+                <p class="text-sm text-gray-600">Anda telah menyelesaikan pekerjaan dalam waktu:</p>
+                <span class="block my-3 text-xl font-bold text-green-700">{{ $task->remaining }}</span>
+                
+                <div class="text-right">
+                    <button id="confirmComplete" class="btn-primary">OKE</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="wrapper">
             <h3>Update</h3>
             <div class="content-update">
@@ -164,30 +175,42 @@
                     onchange="previewImage(event)"
                 />
 
-                <div class="input-group-icon">
+                {{-- <div class="input-group-icon">
                     <div title="Upload gambar" class="icon icon-start ri-camera-line cursor-pointer" onclick="document.getElementById('image').click()"></div>
                     <input name="status" type="text" placeholder="Tulis update disini...">
                     <button type="button" class="icon ri-map-pin-2-line pr-8" onclick="toggleMap()"></button>
                     <button type="submit" class="icon ri-send-plane-fill" style="border: none; background: none;"></button>
+                </div> --}}
+
+                <div class="flex items-center gap-2 px-3 py-2 sm:gap-3 w-full">
+                    <!-- Kamera -->
+                    <div title="Upload gambar"
+                            class="cursor-pointer text-xl text-gray-600"
+                            onclick="document.getElementById('image').click()">
+                        <i class="ri-camera-line"></i>
+                    </div>
+                
+                    <!-- Input teks -->
+                    <input name="status"
+                        type="text"
+                        placeholder="Tulis update disini..."
+                        class="flex-1 min-w-0 px-3 py-2 rounded border border-gray-300 
+                            focus:outline-none focus:ring focus:ring-blue-200 text-sm" />
+                
+                    <!-- Tombol Map -->
+                    <button type="button"
+                            class="text-xl text-blue-600 hover:text-blue-800"
+                            onclick="toggleMap()">
+                        <i class="ri-map-pin-2-line"></i>
+                    </button>
+                
+                    <!-- Tombol Kirim -->
+                    <button type="submit"
+                            class="text-xl text-green-600 hover:text-green-800">
+                        <i class="ri-send-plane-fill"></i>
+                    </button>
                 </div>
             </form>
-        </div>
-    </div>
-    
-    <!-- Modal Overlay -->
-    <div id="modalOverlay" class="hidden">
-        <!-- Modal Container -->
-        <div id="modalContainer" class="scale-95 opacity-0">            
-            <h3>Terima Kasih</h3>
-            <p>Anda telah menyelesaikan pekerjaan dalam waktu </p>
-            <span>4 jam 12 menit</span>
-            
-            <!-- Modal Footer -->
-            <div id="modalFooter">
-                <button id="cancelBtn" class="btn-primary">
-                    OKE
-                </button>
-            </div>
         </div>
     </div>
     
@@ -297,6 +320,57 @@
 
         //     previewContainer.appendChild(img);
         // }
+
+        const openModalBtn = document.getElementById("openModal");
+        const modalOverlay = document.getElementById("modalOverlay");
+        const modalContainer = document.getElementById("modalContainer");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const confirmCompleteBtn = document.getElementById("confirmComplete");
+        const completeForm = document.getElementById("completeForm");
+
+        function openModal() {
+            modalOverlay.classList.remove("hidden");
+            modalOverlay.classList.add("flex");
+            setTimeout(() => {
+                modalContainer.classList.remove("scale-95", "opacity-0");
+                modalContainer.classList.add("scale-100", "opacity-100");
+            }, 50);
+        }
+
+        function closeModal() {
+            modalContainer.classList.remove("scale-100", "opacity-100");
+            modalContainer.classList.add("scale-95", "opacity-0");
+            setTimeout(() => {
+                modalOverlay.classList.add("hidden");
+                modalOverlay.classList.remove("flex");
+            }, 300);
+        }
+
+        if (openModalBtn) openModalBtn.addEventListener("click", openModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+
+        if (modalOverlay) {
+            modalOverlay.addEventListener("click", (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+        }
+
+        if (confirmCompleteBtn) {
+            confirmCompleteBtn.addEventListener("click", () => {
+                completeForm.submit();
+            });
+        }
+
+        // Menutup modal dengan tombol ESC
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+            if (!modalOverlay.classList.contains("hidden")) {
+                closeModal();
+            }
+            }
+  });
     </script>
 @endpush
 </x-dynamic-layout>

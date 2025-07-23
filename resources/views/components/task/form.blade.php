@@ -2,7 +2,7 @@
 
 @php
     $prefix = Auth::user()->role->name; // 'admin', 'master', dll
-    $actions = ['null' => 'Not Started', 'in progress' => 'In Progress', 'completed' => 'Completed'];
+    $actions = ['null' => 'Belum Dimulai', 'in progress' => 'Sedang Dikerjakan', 'completed' => 'Selesai'];
 @endphp
 
 <form method="POST" action="{{ $task->exists ? route($prefix . '.tasks.update', $task) : route($prefix . '.tasks.store') }}">
@@ -74,5 +74,11 @@
     </div>
 
     {{-- Submit Button --}}
-    <x-primary-button>{{ $task->exists ? 'Update' : 'Buat Tiket' }}</x-primary-button>
+    <div class="flex items-center">
+        <x-primary-button>{{ $task->exists ? 'Update' : 'Buat Tiket' }}</x-primary-button>
+        <a href="{{ route($prefix . '.tasks.index') }}"
+            class="inline-flex items-center px-4 py-2 bg-gray-500 text-white border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-2">
+            Kembali
+        </a>
+    </div>
 </form>

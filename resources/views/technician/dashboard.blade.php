@@ -8,7 +8,7 @@
         <div class="wrapper">
             <h3>Tiket baru untuk anda</h3>
             @foreach ($tasks['newTasks'] as $task)
-                <a href="{{ route('technician.taskorders.add-progress', $task ) }}" class="content-shadow">
+                <a href="{{ route('technician.taskorders.progress', $task ) }}" class="content-shadow">
                     <h2>{{ $task->network->customer->name }}</h2>
                     <div class="icon-text">
                         <span class="ri-map-pin-line"></span>

@@ -1,7 +1,6 @@
 <section>
+    <x-update-profile-header title="Admin" content="admin" />
     
-    <x-update-password-header />
-
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>

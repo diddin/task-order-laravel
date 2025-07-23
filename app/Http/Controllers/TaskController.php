@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Network;
 use App\Models\Task;
 use App\Models\User;
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\Task\TaskStoreRequest;
+use App\Http\Requests\Task\TaskUpdateRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -30,14 +31,11 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $role = $this->role;
-        // $userId = Auth::id();
-
-        if( $role == 'master' || $role == 'admin') {
+        if( $this->role == 'master' || $this->role == 'admin') {
             $tasks = Task::with(['network', 'assignedUsers', 'creator'])
                 ->latest()
                 ->paginate(10);
-        } elseif($role == 'technician') {
+        } elseif($this->role == 'technician') {
             // Tiket Baru untuk Anda (belum direspons)
             // $newTasks = Task::with(['network', 'assignedUser', 'creator'])
             //     ->forUser($userId)
@@ -96,7 +94,7 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request)
+    public function store(TaskStoreRequest $request)
     {
         // $data = $request->validated();
         // $data['created_by'] = Auth::id();
@@ -143,7 +141,7 @@ class TaskController extends Controller
     
             DB::commit();
     
-            return redirect()->route('tasks.index')->with('success', 'Task berhasil dibuat.');
+            return redirect()->route($this->role.'.tasks.index')->with('success', 'Task berhasil dibuat.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Gagal menyimpan task: ' . $e->getMessage()]);
@@ -182,7 +180,7 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(TaskUpdateRequest $request, Task $task)
     {
         DB::beginTransaction();
 
@@ -214,13 +212,6 @@ class TaskController extends Controller
                 $assignData[$userId] = ['role_in_task' => 'onsite'];
             }
 
-            // Tim onsite
-            // if ($request->onsite_ids) {
-            //     foreach ($request->onsite_ids as $userId) {
-            //         $assignData[$userId] = ['role_in_task' => 'onsite'];
-            //     }
-            // }
-
             // Simpan ke pivot
             $task->assignedUsers()->attach($assignData);
 
@@ -229,7 +220,8 @@ class TaskController extends Controller
 
             DB::commit();
 
-            return redirect()->route('tasks.index')->with('success', 'Task updated.');
+            return redirect()->route($this->role.'.tasks.index')
+                ->with('success', 'Tiket '.$task->detail. ' berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Gagal update task: ' . $e->getMessage()]);
@@ -243,6 +235,17 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return redirect()->route('tasks.index')->with('success', 'Task deleted.');
+        return redirect()->route($this->role.'.tasks.index')->with('success', 'Task deleted.');
+    }
+
+    public function completeProgress(Request $request, Task $task)
+    {
+        // Ubah status 'action' menjadi 'completed'
+        $task->update([
+            'action' => 'completed'
+        ]);
+
+        return redirect()->route($this->role.'.dashboard')
+            ->with('success', 'Task berhasil diselesaikan.');
     }
 }

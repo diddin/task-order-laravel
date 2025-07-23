@@ -3,15 +3,15 @@
     <div class="hidden sm:flex w-64 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 fixed top-0 left-0 flex-col justify-between px-4 py-6">
         <div>
             <!-- Logo -->
-            <div class="flex items-center justify-center mb-6">
+            <div class="flex items-center justify-center mb-6 mt-10">
                 <a href="{{ route('master.dashboard') }}">
                     <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                 </a>
             </div>
 
             <!-- Navigation Links -->
-            <nav class="flex flex-col space-y-2">
-                <x-nav-link :href="route('master.dashboard')" :active="request()->routeIs('master.dashboard')">Dashboard</x-nav-link>
+            <nav class="flex flex-col space-y-2 mt-10">
+                {{-- <x-nav-link :href="route('master.dashboard')" :active="request()->routeIs('master.dashboard')">Dashboard</x-nav-link> --}}
                 <x-nav-link :href="route('master.admins.index')" :active="request()->routeIs('master.admins.index')">Admin</x-nav-link>
                 <x-nav-link :href="route('master.technicians.index')" :active="request()->routeIs('master.technicians.index')">Teknisi</x-nav-link>
                 <x-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')">Pelanggan</x-nav-link>
@@ -36,7 +36,7 @@
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                            Log Out
+                            Keluar
                         </x-dropdown-link>
                     </form>
                 </x-slot>
@@ -67,7 +67,7 @@
         x-transition:leave-end="opacity-0 -translate-x-full"
         class="sm:hidden fixed top-16 left-0 right-0 bottom-0 z-40 bg-white dark:bg-gray-900 p-6 space-y-4 overflow-y-auto"
     >
-        <x-responsive-nav-link :href="route('master.dashboard')" :active="request()->routeIs('master.dashboard')" @click="open = false">Dashboard</x-responsive-nav-link>
+        {{-- <x-responsive-nav-link :href="route('master.dashboard')" :active="request()->routeIs('master.dashboard')" @click="open = false">Dashboard</x-responsive-nav-link> --}}
         <x-responsive-nav-link :href="route('master.admins.index')" :active="request()->routeIs('master.admins.index')" @click="open = false">Admin</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('master.technicians.index')" :active="request()->routeIs('master.technicians.index')" @click="open = false">Teknisi</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')" @click="open = false">Pelanggan</x-responsive-nav-link>

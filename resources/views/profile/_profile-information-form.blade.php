@@ -42,13 +42,6 @@
 </div>
 
 <div class="mt-4">
-    <x-input-label for="profile_image" :value="__('Foto Profil')" />
-    <input id="profile_image" name="profile_image" type="file" 
-        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0 file:text-sm file:font-semibold
-               file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-    <x-input-error class="mt-2" :messages="$errors->get('profile_image')" />
-
     @if ($user->profile_image && file_exists(storage_path('app/public/' . $user->profile_image)))
 
         <img class="mt-2" src="{{ asset('storage/' . $user->profile_image) }}" alt="Foto Task" width="300">
@@ -61,6 +54,12 @@
     @else
         <p>Tidak ada gambar atau file hilang.</p>
     @endif
+    <x-input-label for="profile_image" :value="__('Foto Profil')" />
+    <input id="profile_image" name="profile_image" type="file" 
+        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0 file:text-sm file:font-semibold
+               file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+    <x-input-error class="mt-2" :messages="$errors->get('profile_image')" />
 </div>
 
 <div class="mt-2">
@@ -68,7 +67,7 @@
 </div>
 
 <div class="flex items-center gap-4">
-    <x-secondary-button type="submit" class="hover:bg-gray-200">{{ __('Simpan') }}</x-secondary-button>
+    <x-primary-button>{{ __('Simpan') }}</x-primary-button>
 
     @if (session('status') === 'profile-updated')
         <p

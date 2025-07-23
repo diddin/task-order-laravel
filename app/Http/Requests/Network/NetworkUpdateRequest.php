@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Network;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCustomerRequest extends FormRequest
+class NetworkUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,11 @@ class UpdateCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:500',
+            'network_number' => 'required|string|max:255',
+            'detail' => 'nullable|string|max:1000',
+            'access' => 'nullable|string|max:255',
+            'data_core' => 'nullable|string|max:10000',
+            'customer_id' => 'required|exists:customers,id',
         ];
     }
 }

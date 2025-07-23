@@ -1,14 +1,6 @@
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Informasi Profil') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Perbarui informasi profil dan alamat email akun Anda.") }}
-        </p>
-    </header>
-
+    <x-update-profile-header title="" content="akun anda" />
+    
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>

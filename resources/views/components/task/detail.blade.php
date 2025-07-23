@@ -17,14 +17,14 @@
         <p>{{ $task->network->network_number ?? '-' }}</p>
     </div>
 
-    <div class="mb-3">
+    {{-- <div class="mb-3">
         <strong>Assigned Teknisi:</strong>
         <ul>
             @foreach($task->assignedUsers as $user)
                 <li>{{ $user->name }} ({{ ucfirst($user->pivot->role_in_task) }})</li>
             @endforeach
         </ul>
-    </div>
+    </div> --}}
 
     <div class="mb-3">
         <strong>PIC:</strong>
@@ -52,7 +52,24 @@
 
     <div class="mb-3">
         <strong>Status Aksi:</strong>
-        <p class="capitalize">{{ $task->action }}</p>
+        <p class="capitalize">
+            @switch($task->action)
+                @case(null)
+                    Belum dikerjakan
+                    @break
+        
+                @case('in progress')
+                    Sedang Dikerjakan
+                    @break
+        
+                @case('completed')
+                    Selesai
+                    @break
+        
+                @default
+                    {{ $task->action }}
+            @endswitch
+        </p>
     </div>
 
     <div class="mt-6 flex gap-4">

@@ -15,7 +15,9 @@ class TaskOrderSeeder extends Seeder
     public function run()
     {
         // Ambil 10 task pertama (atau sesuai kebutuhan)
-        $tasks = Task::take(10)->get();
+        //$tasks = Task::take(10)->get();
+
+        $tasks = Task::all();
 
         // foreach ($tasks as $task) {
         //     // Buat 3-6 status update acak untuk tiap task

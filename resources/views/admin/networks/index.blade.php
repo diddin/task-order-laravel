@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="flex-1 sm:ml-64 p-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="flex-1 sm:ml-64 p-4">
+        <div class="max-w-9xl mx-auto sm:px-6 lg:px-8">
             <x-network.table :networks="$networks" />
         </div>
     </div>

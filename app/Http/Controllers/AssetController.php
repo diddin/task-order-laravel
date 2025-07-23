@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Asset;
+use App\Models\Task;
+use App\Models\Network;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Asset\AssetStoreRequest;
+use App\Http\Requests\Asset\AssetUpdateRequest;
+
 
 class AssetController extends Controller
 {
@@ -15,149 +20,162 @@ class AssetController extends Controller
      */
     public function index()
     {
-        return Asset::all();
+        $assets = Asset::all();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $assets,
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $networkId = $request->query('network');
+        $network = Network::findOrFail($networkId);
+        $asset = new Asset();
+
+        $portGroups = [
+            ['start' => 1, 'end' => 12],
+            ['start' => 13, 'end' => 24],
+            ['start' => 25, 'end' => 44],
+            ['start' => 45, 'end' => 48],
+            ['start' => 49, 'end' => 96],
+        ];
+
+        return view('assets.create', compact('network', 'asset', 'portGroups'));
+
+        //return view(Auth::user()->role->name.'.assets.create', compact('network', 'asset', 'portGroups'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AssetStoreRequest $request)
     {
-        $validated = $request->validate([
-            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'validation_date' => 'nullable|date',
-            'data_collection_time' => 'nullable|date',
-            'location' => 'nullable|string',
-            'code' => 'required|string|unique:assets,code',
-            'name' => 'required|string',
-            'label' => 'required|string',
-            'object_type' => 'nullable|string',
-            'construction_location' => 'nullable|string',
-            'potential_problem' => 'nullable|string',
-            'improvement_recomendation' => 'nullable|string',
-            'detail_improvement_recomendation' => 'nullable|string',
-            'pop' => 'nullable|string',
-            'olt' => 'nullable|string',
-            'number_of_ports' => 'integer|min:0',
-            'number_of_registered_ports' => 'integer|min:0',
-            'number_of_registered_labels' => 'integer|min:0',
-        ]);
+        $validated = $request->validated();
 
-        $asset = Asset::create($validated);
+        $assetId = null;
 
-        DB::transaction(function () use ($validated, $request, $asset) {
+        DB::transaction(function () use ($validated, $request, &$assetId) {
+
+            $asset = Asset::create($validated);
+            $assetId = $asset->id;
         
             if ($request->hasFile('images')) {
                 foreach ((array) $request->file('images') as $image) {
                     if ($image) {
-                        $path = $image->store('assets', 'public');
-                        $asset->images()->create(['file_path' => $path]);
+                        $path = $image->store('asset_images', 'public');
+                        $asset->images()->create(['image_path' => $path]);
                     }
+                }
+            }
+
+            // Simpan data port dan jumper (asumsi array input)
+            $dataPorts = $request->input('data_port', []);
+            $jumpers = $request->input('jumper', []);
+
+            foreach ($dataPorts as $index => $port) {
+                $jumper = $jumpers[$index] ?? null; // cek kalau ada jumper di index ini
+
+                if ($port && $jumper) {
+                    $asset->ports()->create([
+                        'port' => $port,
+                        'jumper_id' => $jumper,
+                    ]);
                 }
             }
         });
 
-        return redirect()->route('assets.show', $asset->id)
+        return redirect()->route('assets.show', $assetId)
             ->with('success', 'Asset created successfully');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Asset $asset)
-    { //dd($asset);
-        //$asset = Asset::findOrFail($id);
+    public function show(Asset $asset, Task $task)
+    {
+        $portGroups = [
+            ['start' => 1, 'end' => 12],
+            ['start' => 13, 'end' => 24],
+            ['start' => 25, 'end' => 44],
+            ['start' => 45, 'end' => 48],
+            ['start' => 49, 'end' => 96],
+        ]; // echo "<pre>"; print_r($asset->images->toArray()); echo "</pre>"; die();
 
-        if(Auth::user()->role->name === 'technician') {
-            return view('technician.assets.detail', compact('asset'));
-        }
-
-        return view('assets.detail', compact('asset'));
-        //return Asset::findOrFail($id);
+        return view(Auth::user()->role->name.'.assets.detail', compact('asset', 'portGroups', 'task'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Asset $asset)
     {
-        $asset = Asset::findOrFail($id);
-        return view('assets.edit', compact('asset'));
+        $portGroups = [
+            ['start' => 1, 'end' => 12],
+            ['start' => 13, 'end' => 24],
+            ['start' => 25, 'end' => 44],
+            ['start' => 45, 'end' => 48],
+            ['start' => 49, 'end' => 96],
+        ]; //echo "<pre>"; print_r($portsWithJumper->toArray()); echo "</pre>"; die();
+        
+        return view('assets.edit', compact('asset', 'portGroups'));
+        //return view(Auth::user()->role->name.'.assets.edit', compact('asset', 'portGroups'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage. Request 
      */
-    public function update(Request $request, Asset $asset)
-    { //dd('huhu', $request->all(), $request->file('images'));
-        //$asset = Asset::findOrFail($id);
+    public function update(AssetUpdateRequest $request, Asset $asset)
+    {
+        //echo "<pre>"; print_r($request->all()); echo "</pre>"; die();
 
-        $validated = $request->validate([
-            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'validation_date' => 'sometimes|nullable|date',
-            'data_collection_time' => 'sometimes|nullable|date',
-            'location' => 'sometimes|nullable|string',
-            'code' => 'sometimes|required|string|unique:assets,code,' . $asset->id,
-            'name' => 'sometimes|required|string',
-            'label' => 'sometimes|required|string',
-            'object_type' => 'nullable|string',
-            'construction_location' => 'nullable|string',
-            'potential_problem' => 'nullable|string',
-            'improvement_recomendation' => 'nullable|string',
-            'detail_improvement_recomendation' => 'nullable|string',
-            'pop' => 'nullable|string',
-            'olt' => 'nullable|string',
-            'number_of_ports' => 'integer|min:0',
-            'number_of_registered_ports' => 'integer|min:0',
-            'number_of_registered_labels' => 'integer|min:0',
-        ]);
-
-        // $asset->update($validated);
-
-        // if ($request->hasFile('images')) {
-        //     foreach ($request->file('images') as $image) {
-        //         $path = $image->store('assets', 'public');
-
-        //         $asset->images()->create([
-        //             'file_path' => $path
-        //         ]);
-        //     }
-        // }
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request, $asset) {
-            $asset->update($validated); // atau create()
         
             if ($request->hasFile('images')) {
                 foreach ((array) $request->file('images') as $image) {
                     if ($image) {
-                        $path = $image->store('assets', 'public');
-                        $asset->images()->create(['file_path' => $path]);
+                        $path = $image->store('asset_images', 'public');
+                        $asset->images()->create(['image_path' => $path]);
                     }
                 }
             }
 
+            $asset->update($validated); // atau create()
+
             if ($request->has('delete_images')) {
                 $imageIdsToDelete = $request->input('delete_images');
                 foreach ($asset->images()->whereIn('id', $imageIdsToDelete)->get() as $image) {
-                    Storage::disk('public')->delete($image->file_path);
+                    Storage::disk('public')->delete($image->image_path);
                     $image->delete();
                 }
             }
 
+            // Update ports dan jumpers
+            $dataPorts = $request->input('data_port', []);
+            $jumpers = $request->input('jumper', []);
+
+            // Hapus dulu semua port terkait asset
+            $asset->ports()->delete();
+
+            foreach ($dataPorts as $index => $port) {
+                $jumper = $jumpers[$index] ?? 0;
+                if ($port != 0 && $jumper != 0) {
+                    $asset->ports()->create([
+                        'port' => $port,
+                        'jumper_id' => $jumper,
+                    ]);
+                }
+            }
         });
 
         return redirect()->route('assets.show', $asset->id)
-            ->with('success', 'Asset updated successfully');
-
-        //return $asset;
+            ->with('success', 'Aset '.$asset->name.' berhasil diperbarui.');
     }
 
     /**
@@ -168,6 +186,6 @@ class AssetController extends Controller
         $asset = Asset::findOrFail($id);
         $asset->delete();
 
-        return response()->json(['message' => 'Asset deleted']);
+        return response()->json(['message' => 'Asset berhasil dihapus']);
     }
 }

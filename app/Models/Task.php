@@ -40,13 +40,29 @@ class Task extends Model
     }
     
     public function pic() {
-        // return $this->assignedUsers()->wherePivot('role_in_task', 'pic');
         return $this->assignedUsers()->wherePivot('role_in_task', 'pic')->first();
     }
     
     public function onsiteTeam() {
-        //return $this->assignedUsers()->wherePivot('role_in_task', 'onsite');
         return $this->assignedUsers()->wherePivot('role_in_task', 'onsite')->get();
+    }
+
+    // Task::with(['picUsers', 'onsiteUsers'])->get();
+    
+    public function picUsers()
+    {
+        return $this->assignedUsers()->wherePivot('role_in_task', 'pic');
+        // return $this->belongsToMany(User::class, 'task_user_assignment')
+        //             ->withPivot('role_in_task')
+        //             ->wherePivot('role_in_task', 'pic');
+    }
+
+    public function onsiteUsers()
+    {
+        return $this->assignedUsers()->wherePivot('role_in_task', 'onsite');
+        // return $this->belongsToMany(User::class, 'task_user_assignment')
+        //             ->withPivot('role_in_task')
+        //             ->wherePivot('role_in_task', 'onsite');
     }
 
     // User yang membuat task
@@ -62,7 +78,18 @@ class Task extends Model
 
     public function scopeForUser($query, $userId)
     {
-        return $query->where('assigned_to', $userId);
+        //return $query->where('assigned_to', $userId);
+        return $query->whereHas('assignedUsers', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        });
+    }
+
+    public function scopeForPicUser($query, $userId)
+    {
+        return $query->whereHas('assignedUsers', function ($q) use ($userId) {
+            $q->where('user_id', $userId)
+            ->where('role_in_task', 'pic');
+        });
     }
 
     public function scopeWithAction($query)
