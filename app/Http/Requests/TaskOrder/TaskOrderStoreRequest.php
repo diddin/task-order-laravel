@@ -16,13 +16,20 @@ class TaskOrderStoreRequest extends FormRequest
         //return auth()->check();
     }
 
+    // protected function prepareForValidation()
+    // {
+    //     if ($this->latitude === 'null') {
+    //         $this->merge(['latitude' => (int) $this->latitude]);
+    //     }
+    // }
+
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
+    {// dd($this->all());
         return [
             //'task_id'   => ['required', 'exists:tasks,id'],
             'status'    => ['required', 'string', 'max:1000'],

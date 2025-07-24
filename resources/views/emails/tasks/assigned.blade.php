@@ -9,7 +9,7 @@ Anda telah ditugaskan dalam task berikut:
 - **Peran Anda**: {{ ucfirst($user->pivot->role_in_task) }}
 - **Dibuat oleh**: {{ $task->creator->name ?? 'N/A' }}
 
-@component('mail::button', ['url' => url('/tasks/' . $task->id)])
+@component('mail::button', ['url' => url('/taskorders/' . $task->id)])
 Lihat Task
 @endcomponent
 

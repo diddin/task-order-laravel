@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AssetPortSeeder::class,
             AssetImageSeeder::class,
             ChatSeeder::class,
+            AnnouncementSeeder::class,
         ]);
     }
 }

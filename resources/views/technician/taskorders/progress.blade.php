@@ -1,15 +1,5 @@
 <x-dynamic-layout>
     <!-- content -->
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
     <div>
     <div class="container flex-1 overflow-y-auto px-4 pb-20 sm:pb-20">
         <div class="wrapper">
@@ -17,6 +7,16 @@
                 <span class="text-xl ri-arrow-left-s-line"></span>
                 <span>Kembali</span>
             </a>
+            @if (session('error'))
+                <div class="detail-text">
+                    {{ session('error') }}
+                </div>
+            @endif
+            @if (session('success'))
+                <div class="detail-text">
+                    {{ session('success') }}
+                </div>
+            @endif
             <div class="content-shadow">
                 <div class="detail-text">
                     <span>No. Tiket</span>
@@ -41,11 +41,20 @@
                         <?= htmlspecialchars($task->network->data_core ?? '') ?>
                     </div>
                 </div>
-                <div class="group-between">
+                {{-- <div class="group-between">
                     <span class="text-gray-600">Data Aset</span>
                     <a href="{{ route('assets.show', [$task->network->asset, $task]) }}" class="btn-secondary">Lihat Data Aset</a>
+                </div> --}}
+                <div class="group-between">
+                    <span class="text-gray-600">Data Aset</span>
+                    <a href="{{ $task->network->asset
+                        ? route('assets.edit', $task->network->asset) 
+                        : route('assets.create', ['network' => $task->network->id]) 
+                    }}" class="btn-secondary">
+                        {{ $task->network->asset ? 'Lihat Data Aset' : 'Tambah Data Aset' }}
+                    </a>
                 </div>
-                
+
                 <div class="pic-content">
                     <h4>PIC</h4>
                     <div class="pic-item">
@@ -144,6 +153,9 @@
                 <input type="hidden" id="latitude" name="latitude">
                 <input type="hidden" id="longitude" name="longitude">
 
+                @error('latitude') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+                @error('longitude') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+
                 <div id="map-container" style="display: none; margin-top: 10px; transition: all 0.3s ease;">
                     <div class="w-full max-w-[750] mx-auto">
                         <iframe
@@ -196,6 +208,7 @@
                         placeholder="Tulis update disini..."
                         class="flex-1 min-w-0 px-3 py-2 rounded border border-gray-300 
                             focus:outline-none focus:ring focus:ring-blue-200 text-sm" />
+                    @error('status') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
                 
                     <!-- Tombol Map -->
                     <button type="button"

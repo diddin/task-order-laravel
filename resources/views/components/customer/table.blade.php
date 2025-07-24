@@ -26,7 +26,7 @@
                 @forelse ($customers as $customer)
                     <tr class="border-b dark:border-gray-700">
                         <td class="p-2">
-                            {{ $loop->iteration }}
+                            {{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}
                         </td>
                         <td class="p-2">{{ $customer->name }}</td>
                         <td class="p-2">{{ $customer->address }}</td>

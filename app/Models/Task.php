@@ -14,7 +14,7 @@ class Task extends Model
         'detail',
         'network_id',
         'created_by',
-        'action',
+        'action', // ['in progress', 'completed'])->nullable()
     ];
 
     protected static function booted()

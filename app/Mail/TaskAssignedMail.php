@@ -26,7 +26,7 @@ class TaskAssignedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Tugas Baru Telah Diberikan Kepada Anda')
+        return $this->subject('Tiket Baru Telah Diberikan Kepada Anda')
                     ->markdown('emails.tasks.assigned')
                     ->with([
                         'task' => $this->task,

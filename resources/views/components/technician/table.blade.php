@@ -30,7 +30,9 @@
         <tbody>
             @foreach ($technicians as $technician)
                 <tr class="border-b dark:border-gray-700">
-                    <td class="p-2">{{ $loop->iteration }}</td>
+                    <td class="p-2">
+                        {{ ($technicians->currentPage() - 1) * $technicians->perPage() + $loop->iteration }}
+                    </td>
                     <td class="p-2">{{ $technician->name }}</td>
                     <td class="p-2">{{ $technician->email }}</td>
                     <td class="p-2">

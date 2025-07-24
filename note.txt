@@ -46,6 +46,33 @@ php artisan optimize:clear
 
 rm public/hot
 
+sudo chown -R www-data:www-data /var/www/task-order-laravel
+sudo find /var/www/task-order-laravel -type f -exec chmod 664 {} \;
+sudo find /var/www/task-order-laravel -type d -exec chmod 775 {} \;
+
+# Ubah kepemilikan
+sudo chown -R www-data:www-data /var/www/task-order-laravel/storage
+
+# Ubah permission
+sudo chmod -R 775 /var/www/task-order-laravel/storage
+
+# (Opsional) Buat file log jika belum ada
+touch /var/www/task-order-laravel/storage/logs/laravel.log
+sudo chown www-data:www-data /var/www/task-order-laravel/storage/logs/laravel.log
+sudo chmod 664 /var/www/task-order-laravel/storage/logs/laravel.log
+
+# Pastikan file dan folder bisa ditulis
+sudo chown www-data:www-data /var/www/task-order-laravel/database/database.sqlite
+sudo chmod 664 /var/www/task-order-laravel/database/database.sqlite
+
+# Pastikan folder database/ juga benar INI PALING PENTING
+sudo chown -R www-data:www-data /var/www/task-order-laravel/database
+sudo chmod -R 775 /var/www/task-order-laravel/database
+
+sudo systemctl restart apache2    # Jika pakai Apache
+sudo systemctl restart php8.1-fpm # Jika pakai Nginx + PHP-FPM
+
+=============================================
 
 Pertanyaan ini sangat penting, karena banyak orang keliru menggunakan load() vs with() — padahal fungsinya berbeda konteks dan bisa menimbulkan bug atau query tidak efektif.
 🔍 Perbedaan Utama:

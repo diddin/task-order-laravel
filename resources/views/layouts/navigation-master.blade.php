@@ -17,6 +17,7 @@
                 <x-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')">Pelanggan</x-nav-link>
                 <x-nav-link :href="route('master.networks.index')" :active="request()->routeIs('master.networks.index')">Jaringan</x-nav-link>
                 <x-nav-link :href="route('master.tasks.index')" :active="request()->routeIs('master.tasks.index')">Tiket</x-nav-link>
+                <x-nav-link :href="route('master.announcements.index')" :active="request()->routeIs('master.announcements.index')">Pengumuman</x-nav-link>
             </nav>
         </div>
 
@@ -73,6 +74,7 @@
         <x-responsive-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')" @click="open = false">Pelanggan</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('master.networks.index')" :active="request()->routeIs('master.networks.index')" @click="open = false">Jaringan</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('master.tasks.index')" :active="request()->routeIs('master.tasks.index')" @click="open = false">Tiket</x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('master.announcements.index')" :active="request()->routeIs('master.announcements.index')" @click="open = false">Pengumuman</x-responsive-nav-link>
 
         <div class="border-t pt-4">
             <x-responsive-nav-link :href="route('master.profile.edit')" @click="open = false">Profil</x-responsive-nav-link>

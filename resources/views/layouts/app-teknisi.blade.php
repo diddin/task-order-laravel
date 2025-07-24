@@ -19,15 +19,9 @@
 
     </head>
     <body class="without-keyboard">
-        <!-- header -->
-        @include('layouts.navigation-teknisi')
-        <!-- Page Content -->
         <div class="body-content detail-tiket">
             {{ $slot }}
         </div>
-        <!-- footer -->
-        @include('layouts.footer')
-        <!-- Tempat menyisipkan script -->
         @stack('scripts')
     </body>
 </html>

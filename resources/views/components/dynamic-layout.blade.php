@@ -45,6 +45,8 @@
     </x-app-admin-layout>
 @else
     <x-app-teknisi-layout :header="$header ?? null">
+        @include('layouts.navigation-teknisi')
         {{ $slot }}
+        @include('layouts.footer')
     </x-app-teknisi-layout>
 @endif

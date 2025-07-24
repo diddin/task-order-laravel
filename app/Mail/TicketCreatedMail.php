@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,14 +17,16 @@ class TicketCreatedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public Task $ticket;
+    public Task $task;
+    public User $user;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Task $ticket)
+    public function __construct(Task $task, User $user)
     {
-        $this->ticket = $ticket;
+        $this->task = $task;
+        $this->user = $user;
     }
 
     /**
@@ -32,7 +35,7 @@ class TicketCreatedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Tiket Baru #' . $this->ticket->id . ' Dibuat',
+            subject: 'Tiket Baru #' . $this->task->id . ' Dibuat',
             //from: new Address('support@yourdomain.com', 'Support Team'),
             // replyTo: new Address(config('mail.reply_to.address'), config('mail.reply_to.name')),
             // tags: ['ticket-created', 'ticket-id-' . $this->ticket->id],

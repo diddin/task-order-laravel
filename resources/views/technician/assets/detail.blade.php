@@ -328,164 +328,163 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-        //delete images
-        document.querySelectorAll('input[type="checkbox"][name="delete_images[]"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const label = this.parentElement; // label dari checkbox
-                if (this.checked) {
-                    label.classList.remove('bg-red-300');
-                    label.classList.add('bg-red-700');
-                } else {
-                    label.classList.remove('bg-red-700');
-                    label.classList.add('bg-red-300');
-                }
-            });
-        });
-
-        // upload images
-        const fileInput = document.getElementById('fileInput');
-        const previewContainer = document.getElementById('previewContainer');
-
-        let selectedFiles = [];
-
-        fileInput.addEventListener('change', function () {
-            const newFiles = Array.from(fileInput.files);
-
-            newFiles.forEach(file => {
-                const exists = selectedFiles.some(f => f.file.name === file.name && f.file.size === file.size);
-                if (!exists) {
-                    selectedFiles.push({
-                        id: Date.now() + Math.random(), // ID unik
-                        file: file
-                    });
-                }
+            //delete images
+            document.querySelectorAll('input[type="checkbox"][name="delete_images[]"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const label = this.parentElement; // label dari checkbox
+                    if (this.checked) {
+                        label.classList.remove('bg-red-300');
+                        label.classList.add('bg-red-700');
+                    } else {
+                        label.classList.remove('bg-red-700');
+                        label.classList.add('bg-red-300');
+                    }
+                });
             });
 
-            fileInput.value = ''; // reset agar bisa pilih ulang
-            renderPreviews();
-        });
+            // upload images
+            const fileInput = document.getElementById('fileInput');
+            const previewContainer = document.getElementById('previewContainer');
 
-        function renderPreviews() {
-            previewContainer.querySelectorAll('.img-wrapper.preview-new').forEach(el => el.remove());
+            let selectedFiles = [];
 
-            selectedFiles.forEach(item => {
-                const reader = new FileReader();
+            fileInput.addEventListener('change', function () {
+                const newFiles = Array.from(fileInput.files);
 
-                reader.onload = function (e) {
-                    const wrapper = document.createElement('div');
-                    wrapper.classList.add('img-wrapper', 'preview-new');
+                newFiles.forEach(file => {
+                    const exists = selectedFiles.some(f => f.file.name === file.name && f.file.size === file.size);
+                    if (!exists) {
+                        selectedFiles.push({
+                            id: Date.now() + Math.random(), // ID unik
+                            file: file
+                        });
+                    }
+                });
 
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-
-                    const removeBtn = document.createElement('button');
-                    removeBtn.innerText = '×';
-                    removeBtn.classList.add('remove-btn');
-                    removeBtn.addEventListener('click', function () {
-                        selectedFiles = selectedFiles.filter(f => f.id !== item.id);
-                        renderPreviews(); // re-render preview
-                    });
-
-                    wrapper.appendChild(img);
-                    wrapper.appendChild(removeBtn);
-                    previewContainer.appendChild(wrapper);
-                };
-
-                reader.readAsDataURL(item.file);
+                fileInput.value = ''; // reset agar bisa pilih ulang
+                renderPreviews();
             });
-        }
 
-        // Override form submit
-        document.getElementById('form-asset').addEventListener('submit', function (e) {
-            e.preventDefault();
-            // Cek apakah ada file yang dipilih
-            if (selectedFiles.length === 0) {
-                return this.submit();
-                //alert('Belum ada file yang dipilih.');
-                //return;
+            function renderPreviews() {
+                previewContainer.querySelectorAll('.img-wrapper.preview-new').forEach(el => el.remove());
+
+                selectedFiles.forEach(item => {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        const wrapper = document.createElement('div');
+                        wrapper.classList.add('img-wrapper', 'preview-new');
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.innerText = '×';
+                        removeBtn.classList.add('remove-btn');
+                        removeBtn.addEventListener('click', function () {
+                            selectedFiles = selectedFiles.filter(f => f.id !== item.id);
+                            renderPreviews(); // re-render preview
+                        });
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(removeBtn);
+                        previewContainer.appendChild(wrapper);
+                    };
+
+                    reader.readAsDataURL(item.file);
+                });
             }
-            // Buat DataTransfer untuk mengupdate file input
-            const dt = new DataTransfer();
-            // Filter dan masukkan file yang masih ada
-            selectedFiles.forEach(item => dt.items.add(item.file));
-            // Masukkan kembali ke file input
-            fileInput.files = dt.files;
-            // Optional: set count untuk pengecekan di backend
-            document.getElementById('fileCount').value = dt.files.length;
-            // Delay submit agar fileInput update selesai dulu
-            setTimeout(() => {
-                this.submit();
-            }, 20); // 20ms cukup
-        });
 
-        // Data Port & Jumper
-        document.querySelectorAll('.item-asset .btn-secondary').forEach(button => {
-            button.addEventListener('click', function (e) {
+            // Override form submit
+            document.getElementById('form-asset').addEventListener('submit', function (e) {
                 e.preventDefault();
-                addDataPortRow(this);
+                // Cek apakah ada file yang dipilih
+                if (selectedFiles.length === 0) {
+                    return this.submit();
+                    //alert('Belum ada file yang dipilih.');
+                    //return;
+                }
+                // Buat DataTransfer untuk mengupdate file input
+                const dt = new DataTransfer();
+                // Filter dan masukkan file yang masih ada
+                selectedFiles.forEach(item => dt.items.add(item.file));
+                // Masukkan kembali ke file input
+                fileInput.files = dt.files;
+                // Optional: set count untuk pengecekan di backend
+                document.getElementById('fileCount').value = dt.files.length;
+                // Delay submit agar fileInput update selesai dulu
+                setTimeout(() => {
+                    this.submit();
+                }, 20); // 20ms cukup
             });
+
+            // Data Port & Jumper
+            document.querySelectorAll('.item-asset .btn-secondary').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    addDataPortRow(this);
+                });
+            });
+
+            function addDataPortRow(button) {
+                const itemAsset = button.closest('.item-asset');
+                const inputGroup = itemAsset.querySelector('.input-group');
+                const start = parseInt(inputGroup.dataset.start);
+                const end = parseInt(inputGroup.dataset.end);
+
+                // Buat elemen pembungkus
+                const selectGrid = document.createElement('div');
+                selectGrid.classList.add('select-grid');
+                selectGrid.classList.add('pt-2');
+
+                // Select Data Port
+                const dataSelect = document.createElement('select');
+                dataSelect.name = 'data_port[]';
+                dataSelect.classList.add('form-select');
+                dataSelect.innerHTML = `<option value="" disabled selected>Pilih Data Port</option>`;
+                for (let i = start; i <= end; i++) {
+                    const label = `${i}`;
+                    dataSelect.innerHTML += `<option value="${label}">PORT ${label}</option>`;
+                }
+
+                // Select Jumper
+                const jumperSelect = document.createElement('select');
+                jumperSelect.name = 'jumper[]';
+                jumperSelect.classList.add('form-select');
+                jumperSelect.innerHTML = `<option value="" disabled selected>Jamper ke</option>`;
+                for (let i = start; i <= end; i++) {
+                    const label = `${i}`;
+                    jumperSelect.innerHTML += `<option value="${label}">Jamper ke ${label}</option>`;
+                }
+
+                // Tambahkan ke grid dan tampilkan
+                selectGrid.appendChild(dataSelect);
+                selectGrid.appendChild(jumperSelect);
+                inputGroup.appendChild(selectGrid);
+            }
         });
 
-        function addDataPortRow(button) {
-            const itemAsset = button.closest('.item-asset');
-            const inputGroup = itemAsset.querySelector('.input-group');
-            const start = parseInt(inputGroup.dataset.start);
-            const end = parseInt(inputGroup.dataset.end);
-
-            // Buat elemen pembungkus
-            const selectGrid = document.createElement('div');
-            selectGrid.classList.add('select-grid');
-            selectGrid.classList.add('pt-2');
-
-            // Select Data Port
-            const dataSelect = document.createElement('select');
-            dataSelect.name = 'data_port[]';
-            dataSelect.classList.add('form-select');
-            dataSelect.innerHTML = `<option value="" disabled selected>Pilih Data Port</option>`;
-            for (let i = start; i <= end; i++) {
-                const label = `${i}`;
-                dataSelect.innerHTML += `<option value="${label}">PORT ${label}</option>`;
-            }
-
-            // Select Jumper
-            const jumperSelect = document.createElement('select');
-            jumperSelect.name = 'jumper[]';
-            jumperSelect.classList.add('form-select');
-            jumperSelect.innerHTML = `<option value="" disabled selected>Jamper ke</option>`;
-            for (let i = start; i <= end; i++) {
-                const label = `${i}`;
-                jumperSelect.innerHTML += `<option value="${label}">Jamper ke ${label}</option>`;
-            }
-
-            // Tambahkan ke grid dan tampilkan
-            selectGrid.appendChild(dataSelect);
-            selectGrid.appendChild(jumperSelect);
-            inputGroup.appendChild(selectGrid);
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = imageSrc;
+            modal.classList.remove('hidden');
         }
-    });
 
-    function openModal(imageSrc) {
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        modalImg.src = imageSrc;
-        modal.classList.remove('hidden');
-    }
-
-    function closeModal() {
-        document.getElementById('imageModal').classList.add('hidden');
-    }
-
-    // Tutup modal jika klik luar gambar
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target.id === 'imageModal') {
-            closeModal();
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
         }
-    });
-</script>
-@endpush
+
+        // Tutup modal jika klik luar gambar
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target.id === 'imageModal') {
+                closeModal();
+            }
+        });
+    </script>
+    @endpush
 </x-dynamic-layout>

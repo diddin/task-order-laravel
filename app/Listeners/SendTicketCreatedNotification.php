@@ -24,13 +24,16 @@ class SendTicketCreatedNotification
      */
     public function handle(TicketCreated $event): void
     {
-        // $ticket = $event->task;
+        $task = $event->task;
 
         // // Kirim email langsung tanpa queue
         // Mail::to($ticket->assignedUser->email)->send(new TicketCreatedMail($ticket));
 
-        foreach ($event->task->assignedUsers as $user) {
-            Mail::to($user->email)->send(new TaskAssignedMail($event->task, $user));
+        // email ke user assigned Teknisi (PIC dan ONSITE)
+        foreach ($task->assignedUsers as $user) {
+            //Mail::to($user->email)->send(new TaskAssignedMail($task, $user));
+
+            Mail::to($user->email)->send(new TicketCreatedMail($task, $user));
         }
     }
 }

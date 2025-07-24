@@ -1,12 +1,12 @@
 <x-mail::message>
-# Hai, {{ $ticket->assignedUser->name }}
+# Hai, {{ $user->name }}
 
 Tiket Anda telah dibuat:
 
 {{-- - **Judul**: {{ $ticket->title }} --}}
-- **Deskripsi**: {{ $ticket->detail }}
+- **Deskripsi**: {{ $task->detail }}
 
-<x-mail::button :url="url('/tasks/' . $ticket->id)">
+<x-mail::button :url="url('/tasks/' . $task->id)">
 Tampilkan Tiket
 </x-mail::button>
 

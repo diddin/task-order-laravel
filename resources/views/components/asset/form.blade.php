@@ -325,9 +325,15 @@
             @endphp
             @if ($networkId)
             <div class="btn-secondary lg:ml-40">
-                <a href="{{ route(Auth::user()->role->name . '.networks.show', $networkId) }}">
-                    BATAL
-                </a>
+                @if(Auth::user()->role->name === 'technician')
+                    <a href="{{ url()->previous() }}">
+                        BATAL
+                    </a>
+                @else
+                    <a href="{{ route(Auth::user()->role->name . '.networks.show', $networkId) }}">
+                        BATAL
+                    </a>
+                @endif
             </div>
             @endif
             <button type="submit" class="btn-primary">SIMPAN</button>

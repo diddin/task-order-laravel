@@ -135,7 +135,7 @@ class TaskOrderController extends Controller
 
     public function storeProgress(TaskOrderStoreRequest $request, Task $task)
     {
-        $data = $request->validated();
+        $data = $request->validated(); //dd($task);
 
         // Jika ada file gambar upload
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -151,7 +151,12 @@ class TaskOrderController extends Controller
 
         TaskOrder::create($data);
 
+        if (is_null($task->action)) {
+            $task->action = 'in progress';
+            $task->save();
+        }
+
         return redirect()->route('technician.taskorders.progress', $task->id)
-            ->with('success', 'Task progress berhasil di perbarui.');
+            ->with('success', 'Update Progres Berhasil.');
     }
 }
