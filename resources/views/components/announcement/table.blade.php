@@ -19,8 +19,8 @@
 
     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
         <table class="min-w-full text-sm">
-            <thead class="border-b dark:border-gray-700">
-                <tr>
+            <thead>
+                <tr class="border-b border-gray-400 dark:border-gray-700">
                     <th class="text-left p-2">#</th>
                     <th class="text-left p-2">Judul</th>
                     <th class="text-left p-2">Isi</th>
@@ -32,7 +32,7 @@
             </thead>
             <tbody>
                 @foreach ($announcements as $announcement)
-                    <tr class="border-b dark:border-gray-700">
+                <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-100">
                         <td class="p-2">{{ ($announcements->currentPage() - 1) * $announcements->perPage() + $loop->iteration }}</td>
                         <td class="p-2">{{ $announcement->title }}</td>
                         <td class="p-2">{{ Str::limit($announcement->content, 50) }}</td>

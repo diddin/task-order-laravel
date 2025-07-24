@@ -103,7 +103,7 @@ class TaskOrderController extends Controller
      * Show the form for editing the specified resource.
      */
     public function addProgress(Task $task)
-    {
+    { //dd($task);
         if ($task) {
             $deadline = $task->created_at->copy()->addHours(6);
         

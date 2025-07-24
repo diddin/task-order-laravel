@@ -28,25 +28,33 @@
                     <strong>No. Jaringan:</strong> {{ $network->network_number }}<br>
                     <strong>Detail:</strong> {{ $network->detail }}
                 </div>
-                <a href="{{ route($prefix . '.networks.show', $network) }}" class="text-blue-500">View Network</a>
+                <a href="{{ route($prefix . '.networks.show', $network) }}" class="text-blue-500">Lihat</a>
 
                 {{-- Tasks (Optional) --}}
                 @if($network->tasks && $network->tasks->count())
                     <div class="mt-4">
-                        <h5 class="font-semibold">Tasks:</h5>
+                        <h5 class="font-semibold">Riwayat Perbaikan:</h5>
                         <ul class="list-disc list-inside text-sm">
                             @foreach($network->tasks as $task)
                                 <li>
                                     <a href="{{ route($prefix . '.tasks.show', $task) }}" class="text-blue-400 hover:underline">
                                         {{ $task->detail }}
-                                    </a>
-                                    — <span class="italic text-gray-400">{{ $task->action ?? 'No status' }}</span>
+                                    </a> —
+                                    <span class="italic text-gray-400">
+                                        @if ($task->action === 'in progress')
+                                            sedang dikerjakan
+                                        @elseif ($task->action === 'completed')
+                                            selesai
+                                        @else
+                                            belum dikerjakan
+                                        @endif
+                                    </span>
                                 </li>
                             @endforeach
                         </ul>
                     </div>
                 @else
-                    <p class="text-sm text-gray-400 mt-2">No tasks assigned to this network.</p>
+                    <p class="text-sm text-gray-400 mt-2">Belum pernah ada riwayat tugas perbaikan pada jaringan ini.</p>
                 @endif
             </div>
         @endforeach

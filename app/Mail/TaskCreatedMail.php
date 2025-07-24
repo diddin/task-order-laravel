@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use App\Models\Task;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -11,17 +10,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TaskAssignedMail extends Mailable
+class TaskCreatedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public Task $task;
-    public User $user;
 
-    public function __construct(Task $task, User $user)
+    /**
+     * Create a new message instance.
+     */
+    public function __construct(Task $task)
     {
         $this->task = $task;
-        $this->user = $user;
     }
 
     /**
@@ -30,7 +30,7 @@ class TaskAssignedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Tiket Baru',
+            subject: 'Tiket Dibuat',
         );
     }
 
@@ -40,7 +40,7 @@ class TaskAssignedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.tasks.assigned',
+            markdown: 'emails.tasks.created',
         );
     }
 

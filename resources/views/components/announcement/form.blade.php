@@ -11,6 +11,12 @@
         @method('PUT')
     @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     {{-- Judul Pengumuman --}}
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Judul</label>

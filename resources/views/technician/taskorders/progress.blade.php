@@ -59,7 +59,9 @@
                     <h4>PIC</h4>
                     <div class="pic-item">
                         <div class="pic-name">
-                            <img src="{{ asset('storage/' . $task->pic()->profile_image) }}" alt="photo profile">
+                            <img 
+                                src="{{ $task->pic()?->profile_image ? asset('storage/' . $task->pic()->profile_image) : asset('images/default-profile.png') }}" 
+                                alt="photo profile"/>
                             <span>{{ $task->pic()->name }}</span>
                         </div>
                         <div class="pic-contact">
@@ -77,7 +79,11 @@
                     @foreach ($task->onsiteTeam() as $member)
                         <div class="pic-item">
                             <div class="pic-name">
-                                <img src="{{ asset('storage/' . $member->profile_image) }}" alt="photo profile">
+                                <img 
+                                    src="{{ $member->profile_image ? asset('storage/' . $member->profile_image) : asset('images/default-profile.png') }}" 
+                                    alt="photo profile"
+                                    class="w-10 h-10 rounded-full object-cover"
+                                />
                                 <span>{{ $member->name }}</span> {{-- Sesuaikan field nama user --}}
                             </div>
                             <div class="pic-contact">

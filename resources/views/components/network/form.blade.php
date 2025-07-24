@@ -11,6 +11,12 @@
         @method('PUT')
     @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">No. Jaringan</label>
         <input type="text" name="network_number" value="{{ old('network_number', $network->network_number ?? '') }}"
@@ -49,7 +55,7 @@
     
     <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Pelanggan</label>
-        <select name="customer_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+        <select id="customer_id" name="customer_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
             <option value="">-- Pilih Pelanggan --</option>
             @foreach($customers as $customer)
                 <option value="{{ $customer->id }}"
@@ -71,3 +77,14 @@
         </a>
     </div>
 </form>
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#customer_id').select2({
+            placeholder: "-- Pilih Pelanggan --",
+            allowClear: true
+        });
+    });
+
+</script>
+@endpush

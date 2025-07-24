@@ -6,6 +6,12 @@
         @method($method)
     @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     <div class="item-asset">
         <div class="img-asset overflow-x-auto whitespace-nowrap flex gap-1 p-0 border rounded">
             @foreach(optional($asset)->images ?? [] as $image)

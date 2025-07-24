@@ -15,8 +15,8 @@
         @endif
 
         <table class="min-w-full text-sm">
-            <thead class="border-b dark:border-gray-700">
-                <tr>
+            <thead>
+                <tr class="border-b border-gray-400 dark:border-gray-700">
                     <th class="text-left p-2">#</th>
                     <th class="text-left p-2">Detail Tiket</th>
                     <th class="text-left p-2">No. Jaringan</th>
@@ -27,7 +27,7 @@
             </thead>
             <tbody>
                 @forelse ($tasks as $task)
-                    <tr class="border-b dark:border-gray-700">
+                <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-100">
                         <td class="p-2">
                             {{ $loop->iteration + ($tasks->currentPage() - 1) * $tasks->perPage() }}
                         </td>

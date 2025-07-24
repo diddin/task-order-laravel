@@ -18,8 +18,8 @@
 
 <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
     <table class="min-w-full text-sm">
-        <thead class="border-b dark:border-gray-700">
-            <tr>
+        <thead>
+            <tr class="border-b border-gray-400 dark:border-gray-700">
                 <th class="text-left p-2">#</th>
                 <th class="text-left p-2">Nama</th>
                 <th class="text-left p-2">Email</th>
@@ -29,7 +29,7 @@
         </thead>
         <tbody>
             @foreach ($technicians as $technician)
-                <tr class="border-b dark:border-gray-700">
+            <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-100">
                     <td class="p-2">
                         {{ ($technicians->currentPage() - 1) * $technicians->perPage() + $loop->iteration }}
                     </td>

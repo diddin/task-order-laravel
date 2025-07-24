@@ -96,17 +96,6 @@ class TaskController extends Controller
      */
     public function store(TaskStoreRequest $request)
     {
-        // $data = $request->validated();
-        // $data['created_by'] = Auth::id();
-
-        // $task = Task::create($data);
-
-        // //Mail::to($task->assignedUser->email)->send(new TicketCreatedMail($task)); // jika tanpa listener
-
-        // //event(new TicketCreated($task)); // listener langsung dijalankan
-
-        // return redirect()->route('tasks.index')->with('success', 'Task created.');
-
         DB::beginTransaction();
 
         try {
@@ -141,10 +130,10 @@ class TaskController extends Controller
     
             DB::commit();
     
-            return redirect()->route($this->role.'.tasks.index')->with('success', 'Task berhasil dibuat.');
+            return to_route($this->role.'.tasks.index')->with('success', 'Tiket berhasil dibuat.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal menyimpan task: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gagal menyimpan tiket: ' . $e->getMessage()]);
         }
     }
 
@@ -220,11 +209,11 @@ class TaskController extends Controller
 
             DB::commit();
 
-            return redirect()->route($this->role.'.tasks.index')
+            return to_route($this->role.'.tasks.index')
                 ->with('success', 'Tiket '.$task->detail. ' berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal update task: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gagal update Tiket: ' . $e->getMessage()]);
         }
     }
 
@@ -235,7 +224,7 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return redirect()->route($this->role.'.tasks.index')->with('success', 'Task deleted.');
+        return redirect()->route($this->role.'.tasks.index')->with('success', 'Tiket berhasil dihapus.');
     }
 
     public function completeProgress(Request $request, Task $task)
@@ -246,6 +235,6 @@ class TaskController extends Controller
         ]);
 
         return redirect()->route($this->role.'.dashboard')
-            ->with('success', 'Task berhasil diselesaikan.');
+            ->with('success', 'Tiket berhasil diselesaikan.');
     }
 }

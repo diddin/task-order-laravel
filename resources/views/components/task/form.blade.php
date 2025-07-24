@@ -11,6 +11,12 @@
         @method('PUT')
     @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     {{-- Detail --}}
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Detail</label>
@@ -21,11 +27,14 @@
     {{-- Network --}}
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">No. Jaringan</label>
-        <select name="network_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+        <select id="networkSelect" name="network_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
             <option value="">-- Pilih Jaringan --</option>
             @foreach($networks as $network)
-                <option value="{{ $network->id }}" {{ old('network_id', $task->network_id) == $network->id ? 'selected' : '' }}>
-                    {{ $network->network_number }}
+                <option 
+                    value="{{ $network->id }}"
+                    data-customer="{{ $network->customer->name }}"
+                    {{ old('network_id', $task->network_id) == $network->id ? 'selected' : '' }}>
+                    {{ $network->network_number }} : {{ $network->customer->name }} - {{ $network->customer->address }}
                 </option>
             @endforeach
         </select>
@@ -35,7 +44,7 @@
     {{-- PIC --}}
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">PIC</label>
-        <select name="pic_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+        <select id="picSelect" name="pic_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
             <option value="">-- Pilih PIC --</option>
             @foreach($users as $user)
                 <option value="{{ $user->id }}" {{ old('pic_id', $pic?->id) == $user->id ? 'selected' : '' }}>
@@ -49,7 +58,7 @@
     {{-- Onsite Team --}}
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Tim Onsite</label>
-        <select name="onsite_ids[]" multiple class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+        <select id="onsiteSelect" name="onsite_ids[]" multiple class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
             @foreach($users as $user)
                 <option value="{{ $user->id }}" 
                     {{ in_array($user->id, old('onsite_ids', $onsiteTeam ?? [])) ? 'selected' : '' }}>
@@ -63,7 +72,7 @@
     {{-- Action --}}
     <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Aksi</label>
-        <select name="action" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+        <select id="action" name="action" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
             @foreach($actions as $key => $label)
                 <option value="{{ $key }}" {{ old('action', $task->action) === $key ? 'selected' : '' }}>
                     {{ $label }}
@@ -82,3 +91,50 @@
         </a>
     </div>
 </form>
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#networkSelect').select2({
+            placeholder: "-- Pilih Jaringan --",
+            allowClear: true
+        });
+        $('#picSelect').select2({
+            placeholder: "-- Pilih PIC --",
+            allowClear: true
+        });
+        $('#onsiteSelect').select2({
+            placeholder: "--  Pilih Anggota Onsite -- ",
+            allowClear: true,
+            width: '100%' // penting agar lebarnya penuh
+        });
+
+        $('#action').select2({
+            allowClear: true
+        });
+
+        // Fungsi untuk menonaktifkan opsi yang sama dengan PIC terpilih
+        function disableSelectedPicInOnsite() {
+            const selectedPic = $('#picSelect').val();
+
+            $('#onsiteSelect option').each(function () {
+                const optionValue = $(this).val();
+
+                if (optionValue === selectedPic && selectedPic !== "") {
+                    $(this).prop('disabled', true);
+                } else {
+                    $(this).prop('disabled', false);
+                }
+            });
+
+            // Refresh select2 untuk menampilkan perubahan
+            $('#onsiteSelect').select2();
+        }
+
+        // Jalankan fungsi saat pertama kali
+        disableSelectedPicInOnsite();
+
+        // Jalankan ulang saat PIC berubah
+        $('#picSelect').on('change', disableSelectedPicInOnsite);
+    });
+</script>
+@endpush

@@ -1,7 +1,12 @@
-@component('mail::message')
-# Halo {{ $user->name }}
+@php
+    $role = $task->creator->role->name;
+    $routeName = $role . '.tasks.show';
+@endphp
 
-Anda telah ditugaskan dalam tiket berikut:
+@component('mail::message')
+# Halo {{ $task->creator->name ?? 'N/A' }}
+
+Anda telah membuat tiket berikut:
 
 ### Detail Tugas:
 - **Judul / Rincian**: {{ $task->detail }}
@@ -9,10 +14,10 @@ Anda telah ditugaskan dalam tiket berikut:
 - **Jaringan**: {{ $task->network->network_number }}
 - **Pelanggan**: {{ $task->network->customer->name }}
 - **Lokasi**: {{ $task->network->customer->address }}
-- **Peran Anda**: {{ ucfirst($user->pivot->role_in_task) }} Teknisi
+
 - **Dibuat oleh**: {{ $task->creator->name ?? 'N/A' }}
 
-@component('mail::button', ['url' => url('/taskorders/' . $task->id)])
+@component('mail::button', ['url' => route($routeName, ['task' => $task->id])])
 Lihat Tiket
 @endcomponent
 

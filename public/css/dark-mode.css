@@ -1,0 +1,75 @@
+/* Styling Select2 untuk dark mode */
+@media (prefers-color-scheme: dark) {
+    /* Container untuk single select */
+    .select2-container--default .select2-selection--single {
+        background-color: #374151; /* Tailwind gray-700 */
+        color: white;
+        border: 1px solid #4B5563; /* Tailwind gray-600 */
+        height: 42px; /* Atur tinggi di sini */
+        border-radius: 0.375rem;
+        display: flex;
+        align-items: center; /* Vertikal rata tengah */
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    /* Teks terpilih */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: white;
+        font-size: 0.875rem;
+        line-height: 1.25rem; /* supaya tidak terlalu tinggi */
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Panah di sisi kanan */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 50%;
+        transform: translateY(-50%);
+        right: 10px;
+    }
+
+    /* Daftar opsi */
+    .select2-container--default .select2-results > .select2-results__options {
+        background-color: #374151;
+        color: white;
+    }
+
+    /* Opsi yang dihover atau aktif */
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #2563EB;
+        color: white;
+    }
+
+    /*============================================*/
+    
+    /* Untuk Select2 Multiple Select di dark mode */
+    .select2-container--default .select2-selection--multiple {
+        background-color: #374151; /* gray-700 */
+        color: white;
+        border: 1px solid #4B5563;
+        min-height: 40px;
+        border-radius: 0.375rem;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #4B5563; /* gray-600 */
+        color: white;
+        border: none;
+        margin-top: 5px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        padding: 5px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        background-color: #374151;
+        color: white;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #2563EB;
+        color: white;
+    }
+}
