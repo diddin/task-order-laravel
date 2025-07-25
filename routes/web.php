@@ -189,8 +189,11 @@ Route::middleware('auth')->group(function () {
     //Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('chat', [ChatController::class, 'technicianMessages'])->name('chat.technician-index');
     Route::post('chat', [ChatController::class, 'send'])->name('chat.send');
+    
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('notifications/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllTasksAsRead'])
+            ->name('notifications.markAllTasksAsRead');
 
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

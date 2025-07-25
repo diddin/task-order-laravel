@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\User\UserStoreRequest;
@@ -157,7 +158,7 @@ class TeknisiController extends Controller
         
         // $user->save();
 
-        return Redirect::route($this->role.'.technicians.index', $user)->with('status', 'Teknisi '.$user->name.' berhasil di ubah.');
+        return Redirect::route($this->role.'.technicians.index', $user)->with('status', 'Data Teknisi '.$user->name.' berhasil di ubah.');
     }
 
     /**

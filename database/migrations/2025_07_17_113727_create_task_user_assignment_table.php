@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('task_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('role_in_task', ['pic', 'onsite'])->default('onsite'); // role masing-masing user dalam task
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         
             $table->unique(['task_id', 'user_id']); // agar tidak duplikat

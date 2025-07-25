@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\NotificationService;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('*', function ($view) {
+            $notificationService = app(NotificationService::class);
+            $unreadTaskCount = $notificationService->getUnreadTaskCount();
+    
+            $view->with('unreadTaskCount', $unreadTaskCount);
+        });
     }
 }

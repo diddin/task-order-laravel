@@ -35,7 +35,7 @@ class Task extends Model
 
     public function assignedUsers() {
         return $this->belongsToMany(User::class, 'task_user_assignment')
-                    ->withPivot('role_in_task')
+                    ->withPivot('role_in_task', 'is_read')
                     ->withTimestamps();
     }
     
@@ -78,7 +78,6 @@ class Task extends Model
 
     public function scopeForUser($query, $userId)
     {
-        //return $query->where('assigned_to', $userId);
         return $query->whereHas('assignedUsers', function ($q) use ($userId) {
             $q->where('user_id', $userId);
         });

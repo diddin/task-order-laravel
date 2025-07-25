@@ -8,6 +8,7 @@ use App\Http\Requests\TaskOrder\TaskOrderStoreRequest;
 use App\Http\Requests\TaskOrder\TaskOrderUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TaskOrderController extends Controller
 {
@@ -121,7 +122,7 @@ class TaskOrderController extends Controller
             }
         } else {
             return redirect()->route('technicians.dashboard')
-                ->with('error', 'Task not found.');
+                ->with('error', 'Tiket tidak ditemukan atau sudah dihapus.');
         }
 
         //return view($this->role.'.taskorders.progress-new', compact('task'));

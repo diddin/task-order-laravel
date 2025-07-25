@@ -17,8 +17,13 @@
                         <span class="name">{{ auth()->user()->name }}</span>
                     </div>
                 </a>
-                <a href="{{ route("notifications.index") }}" class="header-notif">
+                <a href="{{ route("notifications.index") }}" class="header-notif relative">
                     <span class="ri-notification-2-fill"></span>
+                    @if($unreadTaskCount > 0)
+                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $unreadTaskCount }}
+                        </span>
+                    @endif
                 </a>
                 <div class="header-menu">
                     <span class="ri-menu-line"></span>
