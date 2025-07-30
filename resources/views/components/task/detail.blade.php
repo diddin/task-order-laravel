@@ -73,10 +73,12 @@
     </div>
 
     <div class="mt-6 flex gap-4">
-        <a href="{{ route($prefix . '.tasks.edit', $task) }}"
-           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Edit Tiket
-        </a>
+        @if ($prefix !== 'technician')
+            <a href="{{ route($prefix . '.tasks.edit', $task) }}"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Edit Tiket
+            </a>
+        @endif
         <a href="{{ route($prefix . '.tasks.index') }}"
            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
             Kembali

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('network_id')->constrained()->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->enum('action', ['in progress', 'completed'])->nullable()->default(null);
+            $table->boolean('notified_no_action')->default(false);
             $table->timestamps();
         });
     }

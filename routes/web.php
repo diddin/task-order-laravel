@@ -17,6 +17,67 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Broadcast;
+
+Broadcast::routes();
+
+Route::get('/test-event', function () {
+    $app_id = '2029022';
+    $app_key = 'c25a48f35d6e35faeae4';
+    $app_secret = '2d28a4956d14f5d44ab8'; // Ganti dengan secret kamu
+    $channel = 'my-channel';
+    $event = 'my-event';
+
+    // 1. Data asli
+    $data_array = ['message' => 'hello world'];
+
+    // 2. Harus di-encode sebagai STRING JSON
+    $data_string = json_encode($data_array, JSON_UNESCAPED_SLASHES);
+
+    // 3. Siapkan payload yang AKAN DIKIRIM KE PUSHER
+    $payload_array = [
+        'name' => $event,
+        'channel' => $channel,
+        'data' => $data_string // ← STRING JSON!
+    ];
+
+    // 4. Encode payload jadi JSON
+    $payload_json = json_encode($payload_array, JSON_UNESCAPED_SLASHES);
+
+    // 5. Hitung body_md5 dari JSON payload itu
+    $body_md5 = md5($payload_json);
+
+    // 6. Buat query params
+    $auth_timestamp = time();
+    $query_string = http_build_query([
+        'auth_key' => $app_key,
+        'auth_timestamp' => $auth_timestamp,
+        'auth_version' => '1.0',
+        'body_md5' => $body_md5
+    ]);
+
+    // 7. Buat string to sign
+    $string_to_sign = "POST\n/apps/{$app_id}/events\n{$query_string}";
+
+    // 8. Generate HMAC SHA256 signature
+    $auth_signature = hash_hmac('sha256', $string_to_sign, $app_secret);
+
+    // 9. Final URL
+    $url = "https://api-ap1.pusher.com/apps/{$app_id}/events?{$query_string}&auth_signature={$auth_signature}";
+
+    // 10. Kirim via CURL
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_json);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    echo "📡 RESPONSE:\n$response\n";
+});
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -161,6 +222,7 @@ Route::middleware('role:technician')->group(function () {
     Route::get('dashboard', [TeknisiController::class, 'dashboard'])->name('technician.dashboard');
 
     Route::get('tasks', [TaskController::class, 'index'])->name('technician.tasks.index');
+    Route::get('tasks/{task}', [TaskController::class, 'show'])->name('technician.tasks.show');
     Route::post('/tasks/{task}/complete', [TaskController::class, 'completeProgress'])->name('technician.task.complete');
 
     Route::get('taskorders/{task}', [TaskOrderController::class, 'addProgress'])->name('technician.taskorders.progress');
@@ -186,9 +248,10 @@ Route::middleware('auth')->group(function () {
     Route::put('assets/{asset}', [AssetController::class, 'update'])->name('assets.update');
     Route::delete('assets', [AssetController::class, 'destroy'])->name('assets.destroy');
 
-    //Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('chat', [ChatController::class, 'technicianMessages'])->name('chat.technician-index');
-    Route::post('chat', [ChatController::class, 'send'])->name('chat.send');
+    Route::get('chats', [ChatController::class, 'index'])->name('chats.index');
+    Route::get('/chats/thread-redirect', [ChatController::class, 'redirectToThread'])->name('chats.thread.redirect');
+    Route::get('chats/thread/{user}', [ChatController::class, 'thread'])->name('chats.thread');
+    Route::post('chats', [ChatController::class, 'send'])->name('chats.send');
     
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('notifications/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
@@ -202,6 +265,13 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Broadcast::channel('private-chat.{userId}', function ($user, $userId) {
+//     // Cek user yang login ID-nya sama dengan userId channel
+//     return (int) $user->id === (int) $userId;
+// });
+
+// require __DIR__.'/channels.php';
     
 // Route::resource('/taskorders', TaskOrderController::class)
 //     ->name('taskorders.index', 'taskorders.store', 'taskorders.create', 

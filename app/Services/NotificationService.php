@@ -21,4 +21,19 @@ class NotificationService
                 ->count();
         });
     }
+
+    public function getUnreadChatCount(): int
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return 0;
+        }
+
+        //return cache()->remember("unread_chats_user_{$user->id}", now()->addMinutes(5), function () use ($user) {
+            return DB::table('chats')
+                ->where('to_user_id', $user->id)
+                ->where('is_read', false)
+                ->count();
+        //});
+    }
 }

@@ -89,8 +89,8 @@ class AssetController extends Controller
             }
         });
 
-        return redirect()->route('assets.show', $assetId)
-            ->with('success', 'Asset created successfully');
+        return redirect()->route('assets.edit', $assetId)
+            ->with('success', 'Data Aset Berhasil Ditambahkan');
     }
 
     /**
@@ -106,7 +106,14 @@ class AssetController extends Controller
             ['start' => 49, 'end' => 96],
         ]; // echo "<pre>"; print_r($asset->images->toArray()); echo "</pre>"; die();
 
-        return view(Auth::user()->role->name.'.assets.detail', compact('asset', 'portGroups', 'task'));
+        return response()->json([
+            'status' => 'success',
+            'data' => [ 
+                'asset' => $asset,
+                'task' => $task,
+                'portGroups' => $portGroups,
+            ],
+        ]);
     }
 
     /**
@@ -123,7 +130,6 @@ class AssetController extends Controller
         ]; //echo "<pre>"; print_r($portsWithJumper->toArray()); echo "</pre>"; die();
         
         return view('assets.edit', compact('asset', 'portGroups'));
-        //return view(Auth::user()->role->name.'.assets.edit', compact('asset', 'portGroups'));
     }
 
     /**
@@ -174,7 +180,7 @@ class AssetController extends Controller
             }
         });
 
-        return redirect()->route('assets.show', $asset->id)
+        return redirect()->route('assets.edit', $asset->id)
             ->with('success', 'Aset '.$asset->name.' berhasil diperbarui.');
     }
 

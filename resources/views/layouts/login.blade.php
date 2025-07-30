@@ -19,9 +19,6 @@
     </head>
     <body class="login-page">
         {{ $slot }}
-        <!-- footer -->
-        @include('layouts.footer')
-        <!-- Tempat menyisipkan script -->
         @stack('scripts')
     </body>
 </html>

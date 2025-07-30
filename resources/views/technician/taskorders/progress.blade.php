@@ -41,10 +41,6 @@
                         <?= htmlspecialchars($task->network->data_core ?? '') ?>
                     </div>
                 </div>
-                {{-- <div class="group-between">
-                    <span class="text-gray-600">Data Aset</span>
-                    <a href="{{ route('assets.show', [$task->network->asset, $task]) }}" class="btn-secondary">Lihat Data Aset</a>
-                </div> --}}
                 <div class="group-between">
                     <span class="text-gray-600">Data Aset</span>
                     <a href="{{ $task->network->asset

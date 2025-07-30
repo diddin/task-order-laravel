@@ -16,6 +16,7 @@ use App\Mail\TicketCreatedMail;
 use Illuminate\Support\Facades\Mail;
 
 // dengan listener
+use App\Events\TaskCreated;
 use App\Events\TicketCreated;
 
 class TaskController extends Controller
@@ -126,7 +127,7 @@ class TaskController extends Controller
             $task->assignedUsers()->attach($assignData);
     
             // Trigger event
-            event(new TicketCreated($task));
+            event(new TaskCreated($task));
     
             DB::commit();
     
@@ -205,7 +206,7 @@ class TaskController extends Controller
             $task->assignedUsers()->attach($assignData);
 
             // Trigger event
-            event(new TicketCreated($task));
+            event(new TaskCreated($task));
 
             DB::commit();
 

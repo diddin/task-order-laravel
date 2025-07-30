@@ -11,18 +11,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TicketCreated
+class TaskUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Task $task;
+    public $task;
+    public $data;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Task $task)
+    public function __construct(Task $task, array $data)
     {
         $this->task = $task;
+        $this->data = $data;
     }
 
     /**

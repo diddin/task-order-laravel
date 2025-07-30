@@ -85,6 +85,5 @@
             allowClear: true
         });
     });
-
 </script>
 @endpush

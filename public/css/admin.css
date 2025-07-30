@@ -73,3 +73,51 @@
         color: white;
     }
 }
+
+/* Atur tinggi input Select2 */
+.select2-container .select2-selection--single {
+    height: 38px; /* sesuaikan tinggi di sini */
+    padding: 6px 12px;
+  }
+  
+  /* Agar teks-nya juga sejajar */
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 30px; /* atau sama dengan tinggi dalamannya */
+  }
+  
+  /* Panah dropdown-nya */
+  .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+  }
+  
+  /* === Select2 dark mode styling === */
+  .dark .select2-container--default .select2-selection--single {
+    background-color: #1f2937; /* bg-gray-800 */
+    border-color: #374151;     /* border-gray-700 */
+    color: #f9fafb;            /* text-gray-100 */
+  }
+  
+  .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #f9fafb;
+  }
+  
+  .dark .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #f9fafb transparent transparent transparent;
+  }
+  
+  .dark .select2-container--default .select2-results__option {
+    background-color: #1f2937; /* bg-gray-800 */
+    color: #f9fafb;            /* text-gray-100 */
+  }
+  
+  .dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #4b5563; /* bg-gray-600 */
+    color: #ffffff;
+  }
+
+  .body-content {
+    min-height: 100vh;
+    background-color: rgb(248 250 252 / var(--tw-bg-opacity));
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+}

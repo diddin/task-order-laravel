@@ -8,7 +8,7 @@
         <div class="wrapper">
             <h3>Tiket baru untuk anda</h3>
             @foreach ($tasks['newTasks'] as $task)
-                <a href="{{ route('technician.taskorders.progress', $task ) }}" class="content-shadow">
+                <a href="{{ route('technician.taskorders.progress', $task ) }}" class="content-shadow hover:bg-gray-100">
                     <h2>{{ $task->network->customer->name }}</h2>
                     <div class="icon-text">
                         <span class="ri-map-pin-line"></span>
@@ -66,9 +66,10 @@
         <div class="wrapper">
             <div class="mb-2 group-between">
                 <h3>Aktifitas Anda</h3>
-                <a href="{{ route('technician.tasks.index') }}" class="flex items-center gap-2 text-blue-700">
+                <a href="{{ route('technician.tasks.index') }}" 
+                    class="flex items-center gap-2 text-blue-700 hover:text-blue-900 transition-all duration-200 group">
                     <span class="text-xs">Lihat Semua</span>
-                    <span class="ri-arrow-right-long-fill"></span>
+                    <span class="ri-arrow-right-long-fill transform transition-transform duration-200 group-hover:translate-x-1"></span>
                 </a>
             </div>
             @foreach($tasks['myActivities'] as $task)

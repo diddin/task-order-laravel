@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Chat extends Model
 {
@@ -16,6 +17,7 @@ class Chat extends Model
         'to_user_id',
         'message',
         'created_at',
+        'is_read',
     ];
 
     // Relasi ke pengirim
@@ -28,5 +30,23 @@ class Chat extends Model
     public function toUser()
     {
         return $this->belongsTo(User::class, 'to_user_id');
+    }
+
+    // Scope: hanya yang belum dibaca
+    public function scopeUnread(Builder $query): Builder
+    {
+        return $query->where('is_read', false);
+    }
+
+    // Scope: filter chat masuk ke user tertentu
+    public function scopeForUser(Builder $query, $userId): Builder
+    {
+        return $query->where('to_user_id', $userId);
+    }
+
+    // Scope: filter chat masuk dari user tertentu
+    public function scopeFromUser(Builder $query, $userId): Builder
+    {
+        return $query->where('from_user_id', $userId);
     }
 }

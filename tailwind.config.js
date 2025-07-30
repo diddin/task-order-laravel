@@ -51,4 +51,6 @@ export default {
     },
 
     plugins: [forms],
+    //darkMode: 'class', // aktifkan dark mode kalau ada class "dark" di elemen atas (biasanya <html>) darkMode: 'media',
+    darkMode: 'media',
 };

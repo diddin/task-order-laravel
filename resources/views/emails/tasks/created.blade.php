@@ -10,7 +10,7 @@ Anda telah membuat tiket berikut:
 
 ### Detail Tugas:
 - **Judul / Rincian**: {{ $task->detail }}
-{{-- - **Status**: {{ ucfirst($task->action ?? 'Belum ditentukan') }} --}}
+- **Status**: {{ ucfirst($task->action ?? 'Belum ditentukan') }}
 - **Jaringan**: {{ $task->network->network_number }}
 - **Pelanggan**: {{ $task->network->customer->name }}
 - **Lokasi**: {{ $task->network->customer->address }}

@@ -1,3 +1,6 @@
+@php
+    $prefix = Auth::user()->role->name; // Contoh: 'admin' atau 'master'
+@endphp
 <x-dynamic-layout>
     <!-- content -->
     <div class="body-content">  
@@ -9,7 +12,15 @@
                 </a>
                 <h3>Aktifitas Anda</h3>
                 @foreach($tasks as $task)
-                    <div class="content-shadow">
+                    @php
+                        $hoverClass = match($task->action) {
+                            'completed' => 'hover:bg-green-100',
+                            'in progress' => 'hover:bg-yellow-100',
+                            default => 'hover:bg-red-100',
+                        };
+                    @endphp
+
+                    <a href="{{ route($prefix . '.tasks.show', $task) }}" class="content-shadow block p-4 rounded transition {{ $hoverClass }}">
                         <p class="text-gray-600 font-medium italic">Pelanggan:</p>
                         <h5>{{ $task->network->customer->name }}</h5>
                         <div class="group-between">
@@ -34,7 +45,7 @@
                                 </span>
                             @endif
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         </div>

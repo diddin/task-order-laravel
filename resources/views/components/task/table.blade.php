@@ -9,9 +9,13 @@
 
     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
         @if(session('success'))
-            <div class="mb-4 text-green-600">
-                {{ session('success') }}
-            </div>
+            <p
+                x-data="{ show: true }"
+                x-show="show"
+                x-transition
+                x-init="setTimeout(() => show = false, 2000)"
+                class="pt-10 text-sm text-gray-600 dark:text-gray-400"
+            >{{ session('success') }}</p>
         @endif
 
         <table class="min-w-full text-sm">

@@ -11,6 +11,15 @@
             {{ $errors->first() }}
         </div>
     @endif
+    @if(session('success'))
+        <p
+            x-data="{ show: true }"
+            x-show="show"
+            x-transition
+            x-init="setTimeout(() => show = false, 2000)"
+            class="pt-10 text-sm text-gray-600 dark:text-gray-400"
+        >{{ session('success') }}</p>
+    @endif
 
     <div class="item-asset">
         <div class="img-asset overflow-x-auto whitespace-nowrap flex gap-1 p-0 border rounded">
@@ -301,50 +310,53 @@
             </div>
         </div>
     </div>
+    
+    @php
+        $isAdmin = Auth::user()->role->name !== 'technician';
+        $networkId = isset($asset) && $asset->network 
+            ? $asset->network->id 
+            : (isset($network) ? $network->id : null);
+    @endphp
 
-    {{-- Tombol Simpan dan Batal --}}
-    {{-- <div class="button-bottom fixed bottom-0 left-0 right-0 border-t bg-white z-50 lg:ml-60">
-        <div class="container"> 
-            <div class="button-content">
-                @php
-                    $networkId = isset($asset) && $asset->network 
-                        ? $asset->network->id 
-                        : (isset($network) ? $network->id : null);
-                @endphp
-                @if ($networkId)
-                <div class="btn-secondary">
-                    <a href="{{ route(Auth::user()->role->name . '.networks.show', $networkId) }}">
-                        BATAL
-                    </a>
+    @if ($isAdmin)
+        <div class="button-bottom fixed bottom-0 left-0 right-0 border-t bg-white z-50 lg:ml-60">
+            <div class="w-full px-4 py-3">
+                <div class="grid grid-cols-2 gap-4 lg:pl-40 lg:max-w-6xl lg:pr-60">
+                    @if ($networkId)
+                        <div class="btn-secondary justify-self-start">
+                            @if(Auth::user()->role->name === 'technician')
+                                <a href="{{ url()->previous() }}">BATAL</a>
+                            @else
+                                <a href="{{ route(Auth::user()->role->name . '.networks.show', $networkId) }}">BATAL</a>
+                            @endif
+                        </div>
+                    @endif
+                    <div class="justify-self-end">
+                        <button type="submit" class="btn-primary">SIMPAN</button>
+                    </div>
                 </div>
-                @endif
-                <button type="submit" class="!m-0 btn-primary">SIMPAN</button>
             </div>
         </div>
-    </div> --}}
-    <div class="button-bottom fixed bottom-0 left-0 right-0 border-t bg-white z-50 lg:ml-60">
-        <div class="max-w-screen-xl mx-auto flex px-3 pl-0 py-3">
-            @php
-                $networkId = isset($asset) && $asset->network 
-                    ? $asset->network->id 
-                    : (isset($network) ? $network->id : null);
-            @endphp
-            @if ($networkId)
-            <div class="btn-secondary lg:ml-40">
-                @if(Auth::user()->role->name === 'technician')
-                    <a href="{{ url()->previous() }}">
-                        BATAL
-                    </a>
-                @else
-                    <a href="{{ route(Auth::user()->role->name . '.networks.show', $networkId) }}">
-                        BATAL
-                    </a>
-                @endif
+    @else
+        <div class="button-bottom fixed bottom-0 left-0 right-0 border-t bg-white z-50">
+            <div class="w-full px-4 py-3">
+                    <div class="grid grid-cols-2 max-w-3xl px-4 gap-4 mx-auto">
+                    @if ($networkId)
+                        <div class="btn-secondary justify-self-start">
+                            @if(Auth::user()->role->name === 'technician')
+                                <a href="{{ url()->previous() }}">BATAL</a>
+                            @else
+                                <a href="{{ route(Auth::user()->role->name . '.networks.show', $networkId) }}">BATAL</a>
+                            @endif
+                        </div>
+                    @endif
+                    <div class="justify-self-end">
+                        <button type="submit" class="btn-primary">SIMPAN</button>
+                    </div>
+                </div>
             </div>
-            @endif
-            <button type="submit" class="btn-primary">SIMPAN</button>
         </div>
-    </div>
+    @endif
 </form>
 
 @once

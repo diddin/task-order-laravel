@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\TaskOrder;
+use App\Events\TaskUpdated;
 use App\Http\Requests\TaskOrder\TaskOrderStoreRequest;
 use App\Http\Requests\TaskOrder\TaskOrderUpdateRequest;
 use Illuminate\Http\Request;
@@ -156,6 +157,9 @@ class TaskOrderController extends Controller
             $task->action = 'in progress';
             $task->save();
         }
+
+        // Trigger event
+        event(new TaskUpdated($task, $data));
 
         return redirect()->route('technician.taskorders.progress', $task->id)
             ->with('success', 'Update Progres Berhasil.');

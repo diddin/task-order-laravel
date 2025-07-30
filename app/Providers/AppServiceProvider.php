@@ -23,9 +23,14 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             $notificationService = app(NotificationService::class);
-            $unreadTaskCount = $notificationService->getUnreadTaskCount();
     
-            $view->with('unreadTaskCount', $unreadTaskCount);
+            $unreadTaskCount = $notificationService->getUnreadTaskCount();
+            $unreadChatCount = $notificationService->getUnreadChatCount();
+    
+            $view->with([
+                'unreadTaskCount' => $unreadTaskCount,
+                'unreadChatCount' => $unreadChatCount,
+            ]);
         });
     }
 }

@@ -43,6 +43,8 @@ php artisan config:clear
 php artisan view:clear
 php artisan route:clear
 php artisan optimize:clear
+php artisan event:clear
+php artisan event:cache
 
 rm public/hot
 
@@ -71,6 +73,75 @@ sudo chmod -R 775 /var/www/task-order-laravel/database
 
 sudo systemctl restart apache2    # Jika pakai Apache
 sudo systemctl restart php8.1-fpm # Jika pakai Nginx + PHP-FPM
+
+php artisan make:event NamaEvent
+php artisan make:listener NamaListener --event=NamaEvent
+
+0. Jalankan Event ChatRead Secara Manual
+Misalnya user ID-nya 1:
+
+php artisan tinker
+
+event(new \App\Events\ChatRead(1));
+event(new \App\Events\ChatSent(\App\Models\Chat::latest()->first()))
+
+Jika listener aktif dan berjalan:
+
+Akan muncul log di storage/logs/laravel.log
+
+Cache akan terisi dengan jumlah unread chat
+
+4. Cek koneksi ke Pusher dari Laravel
+php artisan tinker
+event(new \App\Events\ChatSent(\App\Models\Chat::latest()->first()))
+
+// setelah 6 jam tidak respon tiket maka muncul notifikasi
+1. Buat Notification Email
+php artisan make:notification TaskNoActionReminder
+2. Buat Scheduled Command
+php artisan make:command NotifyUnactedTasks
+3. Daftar dan buat schedule
+app/Providers/ScheduleServiceProvider.php
+
+Jalankan command manual untuk tes:
+php artisan tasks:notify-unacted
+
+ssh username@your-server-ip
+crontab -e
+* * * * * cd /path/to/your/project && php artisan schedule:run >> /dev/null 2>&1
+Ganti /path/to/your/project dengan lokasi folder Laravel kamu, misalnya:
+* * * * * cd /var/www/html/myapp && php artisan schedule:run >> /dev/null 2>&1
+
+* * * * * → berarti setiap menit
+php artisan schedule:run → menjalankan scheduler Laravel
+>> /dev/null 2>&1 → membuang output agar tidak memenuhi log server
+
+
+Cek Scheduler Berjalan
+Tunggu beberapa menit, lalu cek apakah notifikasi mulai dikirim sesuai logic
+Kamu juga bisa tes dengan perintah manual:
+php artisan schedule:run
+
+Kalau kamu tidak yakin direktori Laravel kamu yang benar, jalankan:
+pwd
+...di dalam folder Laravel di server — itu akan menampilkan path absolutnya.
+
+Di Tinker: Buat Task Dummy dengan kondisi yang cocok
+$task = App\Models\Task::create([
+    'detail' => 'Test reminder task',
+    'network_id' => 1, // pastikan ID valid
+    'created_by' => 1, // pastikan ID valid
+    'action' => null,
+    'created_at' => now()->subHours(7), // lebih dari 6 jam
+    'updated_at' => now()->subHours(7),
+    'notified_no_action' => false,
+]);
+
+$task->assignedUsers()->attach([
+    1 => ['role_in_task' => 'pic'] // ganti dengan user ID valid
+]);
+test manual:
+php artisan tasks:notify-unacted
 
 =============================================
 
@@ -253,3 +324,6 @@ Opsi	Tujuan	Cara
 Publish markdown komponen Laravel	Ubah tampilan seluruh email secara global	php artisan vendor:publish --tag=laravel-mail
 Custom markdown per email	Ubah konten email tertentu (pakai <x-mail::message>)	Buat view di resources/views/emails/
 Gunakan HTML langsung	Full kontrol tanpa markdown	Gunakan view: 'emails.tickets.created' dan Blade biasa
+
+
+find database/seeders ! -name 'DatabaseSeeder.php' -type f -delete
