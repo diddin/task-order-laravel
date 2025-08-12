@@ -21,11 +21,6 @@ class UpdateUnreadChatCount
     /**
      * Handle the event.
      */
-    // public function handle(object $event): void
-    // {
-    //     //
-    // }
-    
     public function handle(ChatRead $event)
     {
         $unreadCount = Chat::unread()->forUser($event->userId)->count();

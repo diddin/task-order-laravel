@@ -10,7 +10,7 @@
             <div class="bg-white dark:bg-gray-800 p-6 sm:rounded-lg shadow-sm">
                 <x-task.form 
                     :task="$task" 
-                    :networks="$networks" 
+                    :customers="$customers" 
                     :users="$users" 
                     :pic="$pic" 
                     :onsiteTeam="$onsiteTeam" 

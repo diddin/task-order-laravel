@@ -9,11 +9,12 @@
 Anda telah membuat tiket berikut:
 
 ### Detail Tugas:
+- **Kategori**: {{ ucfirst($task->category ?? '-') }}
 - **Judul / Rincian**: {{ $task->detail }}
 - **Status**: {{ ucfirst($task->action ?? 'Belum ditentukan') }}
-- **Jaringan**: {{ $task->network->network_number }}
-- **Pelanggan**: {{ $task->network->customer->name }}
-- **Lokasi**: {{ $task->network->customer->address }}
+- **Jaringan**: {{ $task->customer->network_number ?? '-' }}
+- **Pelanggan**: {{ $task->customer->name ?? '-' }}
+- **Lokasi**: {{ $task->customer->address ?? '-' }}
 
 - **Dibuat oleh**: {{ $task->creator->name ?? 'N/A' }}
 

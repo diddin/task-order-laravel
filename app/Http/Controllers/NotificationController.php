@@ -17,25 +17,8 @@ class NotificationController extends Controller
         $announcements = Announcement::where('is_active', true)
             ->latest()
             ->paginate(10);
-        
-        $tasks = Task::with([
-                'network', 
-                'creator', 
-                'assignedUsers' => fn($q) => $q->where('user_id', Auth::id())])
-            ->forUser(Auth::id())
-            ->withoutAction()
-            ->latest()
-            //->take(3)
-            ->get();
-        
-        $unreadTaskCount = DB::table('task_user_assignment')
-            ->where('user_id', Auth::id())
-            ->where('is_read', false)
-            ->count();
 
         $notifications['announcements'] = $announcements;
-        $notifications['tasks'] = $tasks;
-        $notifications['unreadTaskCount'] = $unreadTaskCount;
 
         return view('notifications.index', compact('notifications'));
     }

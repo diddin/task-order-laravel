@@ -23,6 +23,6 @@ class ScheduleServiceProvider extends ServiceProvider
     {
         Log::info('Scheduler jalan');
         // Daftarkan jadwal di sini
-        $schedule->command('tasks:notify-unacted')->everyTenMinutes();
+        $schedule->command('tasks:notify-unacted')->everyThirtyMinutes();
     }
 }

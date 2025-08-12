@@ -48,12 +48,6 @@ class ChatSent implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        // $this->chat->from_user_name = $this->chat->fromUser->name;
-        
-        // return [ 
-        //     'chat' => $this->chat,
-
-        // ];
         return [
             'chat' => [
                 'id' => $this->chat->id,
@@ -67,13 +61,6 @@ class ChatSent implements ShouldBroadcast
                 ]
             ]
         ];
-        
-        // return [
-        //     'message' => $this->chat->message,
-        //     'from' => $this->chat->from_user_id,
-        //     'to' => $this->chat->to_user_id,
-        //     'timestamp' => Carbon::parse($this->chat->created_at)->toDateTimeString(),
-        // ];
     }
 
     /**

@@ -34,9 +34,6 @@ class ChatRead
      */
     public function broadcastOn(): array
     {
-        // return [
-        //     new PrivateChannel('channel-name'),
-        // ];
         return [
             new PrivateChannel('user.' . $this->userId),
         ];

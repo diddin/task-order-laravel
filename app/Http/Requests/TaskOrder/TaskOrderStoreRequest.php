@@ -31,11 +31,13 @@ class TaskOrderStoreRequest extends FormRequest
     public function rules(): array
     {// dd($this->all());
         return [
-            //'task_id'   => ['required', 'exists:tasks,id'],
-            'status'    => ['required', 'string', 'max:1000'],
-            'image'     => ['nullable', 'image', 'max:2048'], // max 2MB
-            'latitude'  => ['required', 'numeric', 'between:-90,90'],
-            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'type'       => ['required', 'in:progress,hold,resume'],
+            'status'     => ['required', 'string', 'max:1000'],
+            'image'      => ['nullable', 'image', 'max:2048'],
+            'latitude'   => ['required', 'numeric', 'between:-90,90'],
+            'longitude'  => ['required', 'numeric', 'between:-180,180'],
+            'hold_started_at' => ['nullable', 'date'],
+            'resumed_at'      => ['nullable', 'date'],
         ];
     }
 
@@ -44,6 +46,8 @@ class TaskOrderStoreRequest extends FormRequest
         return [
             'task_id.required'   => 'Task harus dipilih.',
             'task_id.exists'     => 'Task tidak valid.',
+            'type.required'      => 'Tipe progres harus diisi.',
+            'type.in'            => 'Tipe hanya boleh: progress, hold, atau resume.',
             'status.required'    => 'Status progres harus diisi.',
             'status.string'      => 'Status harus berupa teks.',
             'status.max'         => 'Status maksimal 1000 karakter.',

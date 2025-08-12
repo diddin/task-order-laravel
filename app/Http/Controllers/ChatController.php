@@ -113,7 +113,7 @@ class ChatController extends Controller
             ->update(['is_read' => true]);
 
         // Hapus cache agar hitungan unread chat diperbarui
-        // cache()->forget("unread_chats_user_{$authId}");
+        cache()->forget("unread_chats_user_{$authId}");
 
         // Hitung ulang unread count
         $unreadCount = Chat::unread()->forUser($authId)->count();

@@ -16,6 +16,9 @@ class TaskOrder extends Model
         'image',
         'latitude',
         'longitude',
+        'type',              // ← tambahan
+        'hold_started_at',   // ← tambahan
+        'resumed_at',
     ];
 
     public function task()

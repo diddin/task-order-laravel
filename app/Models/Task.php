@@ -11,26 +11,46 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = [
+        'task_number',
         'detail',
-        'network_id',
+        'customer_id',
+        'task_number',
         'created_by',
         'action', // ['in progress', 'completed'])->nullable()
+        'category',
+    ];
+
+    protected $casts = [
+        'completed_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     protected static function booted()
     {
-        static::created(function ($task) {
-            $year = now()->year;
-            $formattedId = str_pad($task->id, 9, '0', STR_PAD_LEFT);
-            $task->task_number = "{$year}-{$formattedId}";
-            $task->save();
+        //     static::created(function ($task) {
+        //         $year = now()->year;
+        //         $formattedId = str_pad($task->id, 9, '0', STR_PAD_LEFT);
+        //         $task->task_number = "{$year}-{$formattedId}";
+        //         $task->save();
+        //     });
+        static::updating(function ($task) {
+            // Jika sebelumnya bukan "completed" dan sekarang jadi "completed"
+            if ($task->isDirty('action') && $task->action === 'completed') {
+                $task->completed_at = now();
+            }
+
+            // Jika sebelumnya "completed" lalu diubah kembali jadi "in progress", kosongkan
+            if ($task->isDirty('action') && $task->action !== 'completed') {
+                $task->completed_at = null;
+            }
         });
     }
-
-    // Relasi ke Network
-    public function network()
+    
+    // Relasi ke Customer New
+    public function customer()
     {
-        return $this->belongsTo(Network::class);
+        return $this->belongsTo(Customer::class);
     }
 
     public function assignedUsers() {
@@ -99,6 +119,15 @@ class Task extends Model
     public function scopeWithoutAction($query)
     {
         return $query->whereNull('action');
+    }
+
+    public function getDurationAttribute()
+    {
+        if ($this->completed_at) {
+            $diff = $this->created_at->diff($this->completed_at);
+            return "{$diff->d} hari {$diff->h} jam {$diff->i} menit";
+        }
+        return null;
     }
     
 }

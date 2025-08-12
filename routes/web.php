@@ -7,6 +7,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskOrderController;
+use App\Http\Controllers\TaskReportController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeknisiController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -108,7 +109,6 @@ Route::middleware('role:master')->prefix('master')->group(function () {
         ->parameters(['technicians' => 'user'])
         ->names('master.technicians');
     Route::resource('customers', CustomerController::class)->names('master.customers');
-    Route::resource('networks', NetworkController::class)->names('master.networks');
     Route::resource('tasks', TaskController::class)->names('master.tasks');
     Route::resource('announcements', AnnouncementController::class)->names('master.announcements');
 
@@ -172,7 +172,6 @@ Route::middleware('role:admin')->prefix('admin')->group(function () {
     Route::get('dashboard', fn () => redirect()->route('admin.customers.index'))->name('admin.dashboard');
 
     Route::resource('customers', CustomerController::class)->names('admin.customers');
-    Route::resource('networks', NetworkController::class)->names('admin.networks');
     Route::resource('tasks', TaskController::class)->names('admin.tasks');
     Route::resource('announcements', AnnouncementController::class)->names('admin.announcements');
 
@@ -240,14 +239,6 @@ Route::middleware('auth')->group(function () {
     
     Route::delete('/profile/image', [ProfileController::class, 'destroyImage'])->name('profile.image.delete');
 
-    Route::get('assets', [AssetController::class, 'index'])->name('assets.index');
-    Route::get('assets/create', [AssetController::class, 'create'])->name('assets.create');
-    Route::post('assets', [AssetController::class, 'store'])->name('assets.store');
-    Route::get('assets/{asset}/task/{task}', [AssetController::class, 'show'])->name('assets.show');
-    Route::get('assets/{asset}/edit', [AssetController::class, 'edit'])->name('assets.edit');
-    Route::put('assets/{asset}', [AssetController::class, 'update'])->name('assets.update');
-    Route::delete('assets', [AssetController::class, 'destroy'])->name('assets.destroy');
-
     Route::get('chats', [ChatController::class, 'index'])->name('chats.index');
     Route::get('/chats/thread-redirect', [ChatController::class, 'redirectToThread'])->name('chats.thread.redirect');
     Route::get('chats/thread/{user}', [ChatController::class, 'thread'])->name('chats.thread');
@@ -258,18 +249,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllTasksAsRead'])
             ->name('notifications.markAllTasksAsRead');
 
+    Route::get('/task/report', [TaskReportController::class, 'index'])->name('task.report');
+    Route::get('task/report/export', [TaskReportController::class, 'export'])->name('task.report.export');
+
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
 });
 
-require __DIR__.'/auth.php';
+Route::get('/api/customers', [CustomerController::class, 'ajaxSearch']);
 
-// Broadcast::channel('private-chat.{userId}', function ($user, $userId) {
-//     // Cek user yang login ID-nya sama dengan userId channel
-//     return (int) $user->id === (int) $userId;
-// });
+require __DIR__.'/auth.php';
 
 // require __DIR__.'/channels.php';
     

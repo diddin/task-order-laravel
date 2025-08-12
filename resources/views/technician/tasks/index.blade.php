@@ -22,7 +22,7 @@
 
                     <a href="{{ route($prefix . '.tasks.show', $task) }}" class="content-shadow block p-4 rounded transition {{ $hoverClass }}">
                         <p class="text-gray-600 font-medium italic">Pelanggan:</p>
-                        <h5>{{ $task->network->customer->name }}</h5>
+                        <h5>{{ $task->customer->name }}</h5>
                         <div class="group-between">
                             <span class="text-gray-700">
                                 <span class="ri-calendar-line"></span>

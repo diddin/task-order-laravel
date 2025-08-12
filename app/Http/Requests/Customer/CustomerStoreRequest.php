@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Customer;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CustomerStoreRequest extends FormRequest
 {
@@ -22,8 +23,53 @@ class CustomerStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:500',
+            'category' => ['required', Rule::in(['akses', 'backbone'])],
+
+            'name' => [
+                Rule::requiredIf(fn () => $this->input('category') === 'akses'),
+                'nullable', 'string', 'max:255',
+            ],
+            'address' => [
+                Rule::requiredIf(fn () => $this->input('category') === 'akses'),
+                'nullable', 'string', 'max:500',
+            ],
+            'network_number' => [
+                Rule::requiredIf(fn () => $this->input('category') === 'akses'),
+                'nullable', 'string', 'max:100',
+            ],
+            'pic' => [
+                Rule::requiredIf(fn () => $this->input('category') === 'akses'),
+                'nullable', 'string', 'max:20',
+            ],
+
+            'technical_data' => 'nullable|string',
+
+            'contact_person' => [
+                Rule::requiredIf(fn () => $this->input('category') === 'akses'),
+                'nullable', 'string', 'max:100',
+            ],
+
+            'cluster' => [
+                Rule::requiredIf(fn () => $this->input('category') === 'akses'),
+                'nullable', Rule::in(['BWA', 'SAST', 'CDA', 'BDA', 'SEOA', 'NEA']),
+            ],
+        ];
+    }
+    
+    public function messages(): array
+    {
+        return [
+            'category.required' => 'Kategori pelanggan wajib dipilih.',
+            'category.in' => 'Kategori harus akses atau backbone.',
+
+            'name.required' => 'Nama pelanggan wajib diisi untuk kategori akses.',
+            'address.required' => 'Alamat wajib diisi untuk kategori akses.',
+            'network_number.required' => 'Nomor jaringan wajib diisi untuk kategori akses.',
+            'pic.required' => 'PIC wajib diisi untuk kategori akses.',
+
+            'contact_person.required' => 'Nama contact person wajib diisi untuk kategori akses.',
+            'cluster.required' => 'Cluster wajib dipilih untuk kategori akses.',
+            'cluster.in' => 'Cluster tidak valid.',
         ];
     }
 }

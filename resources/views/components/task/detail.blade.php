@@ -8,26 +8,49 @@
     <h3 class="text-lg font-semibold mb-4">Detail Informasi Tiket</h3>
 
     <div class="mb-3">
+        <strong>Jaringan:</strong>
+        <p>{{ $task->customer?->network_number ?? '-' }}</p>
+    </div>
+
+    <div class="mb-3">
+        <strong>Nomor Tiket:</strong>
+        <p>{{ $task->task_number ?? '-' }}</p>
+    </div>
+
+    <div class="mb-3">
+        <strong>Pelanggan:</strong>
+        <p>{{ $task->customer?->name ?? '-' }}</p>
+    </div>
+
+    <div class="mb-3">
+        <strong>Kontak Person:</strong>
+        <p>{{ $task->customer?->contact_person ?? '-' }}</p>
+    </div>
+
+    <div class="mb-3">
+        <strong>PIC Pelanggan:</strong>
+        <p>{{ $task->customer?->pic ?? '-' }}</p>
+    </div>
+
+    <div class="mb-3">
         <strong>Detail Tiket:</strong>
         <p>{{ $task->detail }}</p>
     </div>
 
     <div class="mb-3">
-        <strong>No. Jaringan:</strong>
-        <p>{{ $task->network->network_number ?? '-' }}</p>
+        <strong>Kategori:</strong>
+        <p class="capitalize">{{ $task->category ?? '-' }}</p>
     </div>
 
-    {{-- <div class="mb-3">
-        <strong>Assigned Teknisi:</strong>
-        <ul>
-            @foreach($task->assignedUsers as $user)
-                <li>{{ $user->name }} ({{ ucfirst($user->pivot->role_in_task) }})</li>
-            @endforeach
-        </ul>
-    </div> --}}
+    <div class="mb-3">
+        <strong>Data Teknis:</strong>
+        <textarea id="technical_data" name="technical_data" rows="10"
+            class="mt-2 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-0 focus:border-gray-400"
+            readonly>{{ $task->customer->technical_data }}</textarea>
+    </div>
 
     <div class="mb-3">
-        <strong>PIC:</strong>
+        <strong>PIC Teknisi:</strong>
         <p>{{ $task->pic()?->name ?? '-' }}</p>
     </div>
 
@@ -57,15 +80,12 @@
                 @case(null)
                     Belum dikerjakan
                     @break
-        
                 @case('in progress')
                     Sedang Dikerjakan
                     @break
-        
                 @case('completed')
                     Selesai
                     @break
-        
                 @default
                     {{ $task->action }}
             @endswitch
@@ -75,7 +95,7 @@
     <div class="mt-6 flex gap-4">
         @if ($prefix !== 'technician')
             <a href="{{ route($prefix . '.tasks.edit', $task) }}"
-            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 Edit Tiket
             </a>
         @endif

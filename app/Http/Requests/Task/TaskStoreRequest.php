@@ -4,6 +4,7 @@ namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class TaskStoreRequest extends FormRequest
 {
@@ -30,11 +31,25 @@ class TaskStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'task_number'  => [
+                'required',
+                'string',
+                Rule::unique('tasks', 'task_number')->ignore($this->task?->id),
+            ],
             'detail' => 'required|string|max:1000',
-            'network_id' => 'required|exists:networks,id',
-            'action' => 'nullable|in:in progress,completed',
-            //'action' => ['sometimes', 'nullable', Rule::in(['in progress', 'completed'])],
-            
+            'category' => ['required', Rule::in(['akses', 'backbone'])],
+
+            // customer_id wajib kalau category 'akses', boleh null kalau 'backbone'
+            'customer_id' => [
+                Rule::requiredIf(function () {
+                    return $this->input('category') === 'akses';
+                }),
+                'nullable',
+                'exists:customers,id',
+            ],
+
+            'action' => ['nullable', Rule::in(['in progress', 'completed'])],
+
             'pic_id' => 'required|exists:users,id',
             'onsite_ids' => 'nullable|array',
             'onsite_ids.*' => 'exists:users,id',
@@ -48,8 +63,11 @@ class TaskStoreRequest extends FormRequest
             'detail.string' => 'Field detail harus berupa teks.',
             'detail.max' => 'Field detail maksimal :max karakter.',
 
-            'network_id.required' => 'Field Jaringan harus dipilih.',
-            'network_id.exists' => 'Jaringan yang dipilih tidak valid.',
+            'category.required' => 'Kategori harus dipilih.',
+            'category.in' => 'Kategori harus berupa akses atau backbone.',
+
+            'customer_id.required' => 'Field Jaringan harus dipilih.',
+            'customer_id.exists' => 'Jaringan yang dipilih tidak valid.',
 
             'action.in' => 'Field aksi harus salah satu dari: sedang dikerjakan, selesai.',
 

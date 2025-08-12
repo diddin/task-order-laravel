@@ -211,7 +211,7 @@ input[type=number] {
 /* CONTENT */
 body {
     padding-bottom: 83px;
-    padding-top: 62px;
+    padding-top: 0;
 }
 body.without-keyboard {
     padding-bottom: 0;

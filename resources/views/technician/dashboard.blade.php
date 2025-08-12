@@ -6,20 +6,37 @@
     </x-slot>
     <div class="container">
         <div class="wrapper">
-            <h3>Tiket baru untuk anda</h3>
+            <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-4 px-2">
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Tiket baru untuk anda</h3>
+                <form action="{{ route('notifications.markAllTasksAsRead') }}" method="POST">
+                    @csrf
+                    <button 
+                        type="submit"
+                        class="{{ $unreadTaskCount != 0 ? 'font-bold text-blue-500 hover:text-blue-800 text-sm focus:outline-none' : 'text-gray-300 cursor-not-allowed text-sm' }} text-xs"
+                        title="Tandai semua dibaca"
+                        {{ $unreadTaskCount == 0 ? 'disabled' : '' }}
+                    >
+                        Tandai Semua Dibaca
+                    </button>
+                </form>
+            </div>
             @foreach ($tasks['newTasks'] as $task)
-                <a href="{{ route('technician.taskorders.progress', $task ) }}" class="content-shadow hover:bg-gray-100">
-                    <h2>{{ $task->network->customer->name }}</h2>
+                @php
+                    $assignedUser = $task->assignedUsers->first();
+                    $isUnread = $assignedUser && !$assignedUser->pivot->is_read;
+                @endphp
+                <a href="{{ route('technician.taskorders.progress', $task ) }}" 
+                    class="content-shadow hover:bg-gray-100
+                    {{ $isUnread ? 'ring-2 ring-blue-400 hover:bg-gray-100' : 'hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                    <h2>{{ $task->customer?->name ?? 'Backbone' }}</h2>
                     <div class="icon-text">
                         <span class="ri-map-pin-line"></span>
-                        <p>
-                            {{ $task->network->customer->address }}
-                        </p>
+                        <p>{{ $task->customer?->address ?? '-' }}</p>
                     </div>
-                    <div class="icon-text">
+                    {{-- <div class="icon-text">
                         <span class="ri-corner-right-up-line"></span>
                         <p>Akses: FO B2B to Curug</p>
-                    </div>
+                    </div> --}}
                     <div class="eta-footer group-between">
                         <span class="text-gray-700">
                             <span class="ri-calendar-line"></span>
@@ -32,39 +49,9 @@
                     </div>
                 </a>
             @endforeach
-            {{-- <a href="detail_tiket.html" class="content-shadow">
-                <h2>Bank Mandiri TASPEN POS - KCP Balaraja</h2>
-                <div class="icon-text">
-                    <span class="ri-map-pin-line"></span>
-                    <p>Jl. Raya Serang km.25,5, Kel Cibadak, Kec. Cikupa, Kab. Tangerang - KCP Balaraja, Tangerang</p>
-                </div>
-                <div class="icon-text">
-                    <span class="ri-corner-right-up-line"></span>
-                    <p>Akses: FO B2B to Curug</p>
-                </div>
-                <div class="eta-footer group-between">
-                    <span class="text-gray-700">ETA: 12:00</span>
-                    <span class="text-red-700">5 jam 14 menit tersisa</span>
-                </div>
-            </a>
-            <a href="detail_tiket.html" class="content-shadow">
-                <h2>Kantor Pos Jaya Baru - Srengseng Sawah</h2>
-                <div class="icon-text">
-                    <span class="ri-map-pin-line"></span>
-                    <p>Jl. Raya Srengseng km.15,5, Kel Cibadak, Kec. Cikupa, Kab. Tangerang - KCP Balaraja, Tangerang</p>
-                </div>
-                <div class="icon-text">
-                    <span class="ri-corner-right-up-line"></span>
-                    <p>Akses: FO B2B to Curug</p>
-                </div>
-                <div class="eta-footer group-between">
-                    <span class="text-gray-700">ETA: 12:00</span>
-                    <span class="text-red-700">4 jam 14 menit tersisa</span>
-                </div>
-            </a> --}}
         </div>
         <div class="wrapper">
-            <div class="mb-2 group-between">
+            <div class="mb-2 group-between px-2">
                 <h3>Aktifitas Anda</h3>
                 <a href="{{ route('technician.tasks.index') }}" 
                     class="flex items-center gap-2 text-blue-700 hover:text-blue-900 transition-all duration-200 group">
@@ -76,7 +63,7 @@
                 <div class="content-shadow">
                     <h5>
                         {{-- <span class="ri-map-pin-line"></span> --}}
-                        {{ $task->network->customer->name }}
+                        {{ $task->customer?->name ?? 'Backbone' }}
                     </h5>
                     <div class="group-between">
                         <span class="text-gray-700">
@@ -102,27 +89,6 @@
                     </div>
                 </div>
             @endforeach
-            {{-- <div class="content-shadow">
-                <h5>Kantor Pos Jaya Baru - Srengseng Sawah</h5>
-                <div class="group-between">
-                    <span class="text-gray-700">12 Juni 2025</span>
-                    <span class="text-green-700">Selesai</span>
-                </div>
-            </div>
-            <div class="content-shadow">
-                <h5>Bank BRI Permata Hijau</h5>
-                <div class="group-between">
-                    <span class="text-gray-700">12 Juni 2025</span>
-                    <span class="text-red-700">Tidak Tercapai</span>
-                </div>
-            </div>
-            <div class="content-shadow">
-                <h5>Kantor Pos Jaya Baru - Srengseng Sawah</h5>
-                <div class="group-between">
-                    <span class="text-gray-700">12 Juni 2025</span>
-                    <span class="text-green-700">Selesai</span>
-                </div>
-            </div> --}}
         </div>
     </div>
 </x-dynamic-layout>

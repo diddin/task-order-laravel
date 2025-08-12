@@ -23,7 +23,7 @@
         <!-- Page Heading if isset x-slot name="header" on child -->
         @isset($header)
             <header class="bg-white dark:bg-gray-800 shadow pl-64">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 lg:pt-1 lg:pb-3">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 lg:pt-3 lg:pb-3">
                     {{ $header }}
                 </div>
             </header>
@@ -36,7 +36,7 @@
         <!-- Page Heading if isset x-slot name="header" on child -->
         @isset($header)
             <header class="bg-white dark:bg-gray-800 shadow pl-64">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 lg:pt-1 lg:pb-3">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 lg:pt-3 lg:pb-3">
                     {{ $header }}
                 </div>
             </header>

@@ -13,6 +13,11 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
-        Customer::factory()->count(50)->create(); // membuat 50 data customer
+        // Membuat 1 pelanggan kategori backbone
+        Customer::factory()->backbone()->count(1)->create();
+        
+        //Customer::factory()->count(50)->create(); // membuat 50 data customer
+        // Membuat 5 pelanggan kategori akses
+        Customer::factory()->akses()->count(89)->create();
     }
 }

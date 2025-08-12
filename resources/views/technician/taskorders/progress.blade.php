@@ -12,43 +12,47 @@
                     {{ session('error') }}
                 </div>
             @endif
-            @if (session('success'))
-                <div class="detail-text">
-                    {{ session('success') }}
-                </div>
+            @if(session('success'))
+                <p
+                    x-data="{ show: true }"
+                    x-show="show"
+                    x-transition
+                    x-init="setTimeout(() => show = false, 2000)"
+                    class="pt-10 text-sm text-gray-600 dark:text-gray-400"
+                >{{ session('success') }}</p>
             @endif
             <div class="content-shadow">
                 <div class="detail-text">
                     <span>No. Tiket</span>
                     <p>{{ $task->task_number }}</p>
                 </div>
-                <h2>{{ $task->network->customer->name }}</h2>
+                <div class="detail-text">
+                    <span>Tanggal Dibuat</span>
+                    <p>{{ $task->created_at->translatedFormat('d F Y') }}</p>
+                </div>
+                <div class="detail-text">
+                    <span>Pelanggan</span>
+                    <p>{{ $task->customer?->name ?? 'Backbone' }}</p>
+                </div>
+
+                <div class="detail-text">
+                    <span>PIC</span>
+                    <p>{{ $task->customer?->pic ?? '-' }}</p>
+                </div>
+                
                 <div class="detail-text">
                     <span>No. Jaringan</span>
-                    <p>{{ $task->network->network_number }}</p>
+                    <p>{{ $task->customer?->network_number ?? '-' }}</p>
                 </div>
                 <div class="detail-text">
                     <span>Alamat</span>
-                    <p>{{ $task->network->customer->address }}</p>
+                    <p>{{ $task->customer?->address ?? '-' }}</p>
                 </div>
                 <div class="detail-text">
-                    <span>Akses</span>
-                    <p>Akses: {{ $task->network->access }}</p>
-                </div>
-                <div class="detail-text">
-                    <span>Datek</span>
+                    <span>Data Teknis</span>
                     <div class="whitespace-pre-wrap border border-gray-300 p-2 w-100 min-h-[100px] font-mono bg-gray-50 overflow-y-auto">
-                        <?= htmlspecialchars($task->network->data_core ?? '') ?>
+                        <?= htmlspecialchars($task->customer->technical_data ?? '-') ?>
                     </div>
-                </div>
-                <div class="group-between">
-                    <span class="text-gray-600">Data Aset</span>
-                    <a href="{{ $task->network->asset
-                        ? route('assets.edit', $task->network->asset) 
-                        : route('assets.create', ['network' => $task->network->id]) 
-                    }}" class="btn-secondary">
-                        {{ $task->network->asset ? 'Lihat Data Aset' : 'Tambah Data Aset' }}
-                    </a>
                 </div>
 
                 <div class="pic-content">
@@ -61,9 +65,6 @@
                             <span>{{ $task->pic()->name }}</span>
                         </div>
                         <div class="pic-contact">
-                            {{-- <a href="tel:{{ $task->pic()->phone_number }}" class="block text-gray-600">
-                                <span class="ri-phone-line"></span>
-                            </a> --}}
                             <a href="https://wa.me/{{ $task->pic()->phone_number }}" class="block text-green-700">
                                 <span class="ri-whatsapp-line"></span>
                             </a>
@@ -83,9 +84,6 @@
                                 <span>{{ $member->name }}</span> {{-- Sesuaikan field nama user --}}
                             </div>
                             <div class="pic-contact">
-                                {{-- <a href="tel:{{ $member->phone }}" class="block text-gray-600">
-                                    <span class="ri-phone-line"></span>
-                                </a> --}}
                                 <a href="https://wa.me/{{ $member->phone }}" class="block text-green-700">
                                     <span class="ri-whatsapp-line"></span>
                                 </a>
@@ -103,7 +101,13 @@
 
                 <form action="{{ route('technician.task.complete', $task->id) }}" method="POST" id="completeForm">
                     @csrf
-                    <button type="button" id="openModal" class="w-full mt-4 btn-primary">PEKERJAAN SELESAI</button>
+                    <button 
+                        type="button" 
+                        id="openModal" 
+                        class="w-full mt-4 btn-primary" 
+                        {{ $task->completed_at ? 'disabled class=btn-disabled cursor-not-allowed opacity-50' : '' }}>
+                        PEKERJAAN SELESAI
+                    </button>
                 </form>
             </div>
         </div>
@@ -123,23 +127,40 @@
         <div class="wrapper">
             <h3>Update</h3>
             <div class="content-update">
-                <div class="mb-4 date">
-                    {{ $task->created_at->translatedFormat('d F Y') }}
-                </div>
-                @foreach($task->orders as $order)
-                    <div class="update-item">
-                        <span class="time">
+
+                @php
+                    $previousDate = null;
+                @endphp
+
+                @foreach($task->orders->sortBy('created_at') as $order)
+
+                    @php
+                        $currentDate = $order->created_at->translatedFormat('d F Y');
+                    @endphp
+
+                    @if ($currentDate !== $previousDate)
+                        <div class="mb-4 date split-date">
+                            {{ $currentDate }}
+                        </div>
+                        @php $previousDate = $currentDate; @endphp
+                    @endif
+
+                    <div class="update-item {{ $order->type === 'hold' ? 'bg-yellow-100 border-l-4 border-yellow-500' : '' }} p-4 rounded mb-4">
+                        <span class="time block text-sm text-gray-500">
+                            <p class="font-semibold">{{ $order->type === 'hold' ? 'Hold' : '' }}</p>
                             {{ $order->created_at->locale('id')->translatedFormat('d F Y | H:i') }}
+                            <div class="text-xs text-gray-400">
+                                {{ $order->created_at->diffForHumans() }}
+                            </div>
                         </span>
+
                         @if ($order->image && file_exists(storage_path('app/public/' . $order->image)))
-                            <img src="{{ asset('storage/' . $order->image) }}" alt="Foto Task" width="300">
-                        @else
-                            {{-- <p>Tidak ada gambar atau file hilang.</p> --}}
+                            <img src="{{ asset('storage/' . $order->image) }}" alt="Foto Task" width="300" class="my-2 rounded">
                         @endif
-                        
-                        {{-- <img src="{{ asset('images/update-img.png') }}" alt="update images"> --}}
-                        <span>Koordinat: {{ $order->latitude }}, {{ $order->longitude }}</span>
-                        <p>{{ $order->status }}</p>
+
+                        <span class="block text-xs text-gray-700 mb-1">Koordinat: {{ $order->latitude }}, {{ $order->longitude }}</span>
+
+                        <p class="text-sm text-gray-800">{{ $order->status }}</p>
                     </div>
                 @endforeach
             </div>
@@ -154,10 +175,13 @@
                 <!-- Input tersembunyi -->
                 <input type="hidden" id="latitude" name="latitude">
                 <input type="hidden" id="longitude" name="longitude">
+                <input type="hidden" name="type" id="typeInput" value="progress">
 
                 @error('latitude') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
                 @error('longitude') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+                @error('status') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
 
+                <!-- Peta -->
                 <div id="map-container" style="display: none; margin-top: 10px; transition: all 0.3s ease;">
                     <div class="w-full max-w-[750] mx-auto">
                         <iframe
@@ -189,13 +213,6 @@
                     onchange="previewImage(event)"
                 />
 
-                {{-- <div class="input-group-icon">
-                    <div title="Upload gambar" class="icon icon-start ri-camera-line cursor-pointer" onclick="document.getElementById('image').click()"></div>
-                    <input name="status" type="text" placeholder="Tulis update disini...">
-                    <button type="button" class="icon ri-map-pin-2-line pr-8" onclick="toggleMap()"></button>
-                    <button type="submit" class="icon ri-send-plane-fill" style="border: none; background: none;"></button>
-                </div> --}}
-
                 <div class="flex items-center gap-2 px-3 py-2 sm:gap-3 w-full">
                     <!-- Kamera -->
                     <div title="Upload gambar"
@@ -210,7 +227,6 @@
                         placeholder="Tulis update disini..."
                         class="flex-1 min-w-0 px-3 py-2 rounded border border-gray-300 
                             focus:outline-none focus:ring focus:ring-blue-200 text-sm" />
-                    @error('status') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
                 
                     <!-- Tombol Map -->
                     <button type="button"
@@ -218,12 +234,42 @@
                             onclick="toggleMap()">
                         <i class="ri-map-pin-2-line"></i>
                     </button>
-                
-                    <!-- Tombol Kirim -->
-                    <button type="submit"
-                            class="text-xl text-green-600 hover:text-green-800">
-                        <i class="ri-send-plane-fill"></i>
-                    </button>
+
+                    <div class="relative inline-block text-left">
+                        {{-- Tombol utama: ikon pesawat --}}
+                        <button type="button" onclick="toggleDropdown()" class="text-xl text-green-600 hover:text-green-800">
+                            <i class="ri-send-plane-fill"></i>
+                        </button>
+
+                        @php
+                            $lastOrder = $task->orders->last();
+                            $lastType = $lastOrder?->type;
+                        @endphp
+
+                        {{-- Dropdown muncul di atas tombol --}}
+                        <div id="sendDropdown"
+                            class="hidden absolute right-0 bottom-full mb-2 w-40 bg-white border border-gray-300 rounded shadow-lg z-50">
+                           
+                            {{-- Jika terakhir HOLD, hanya tampilkan RESUME --}}
+                            @if ($lastType === 'hold')
+                                <button type="submit" onclick="setType('resume')"
+                                    class="block w-full text-left px-4 py-2 text-sm text-blue-700 hover:bg-blue-100">
+                                    Lanjutkan (Resume)
+                                </button>
+
+                            {{-- Jika terakhir PROGRESS atau RESUME atau belum ada order --}}
+                            @elseif (in_array($lastType, ['progress', 'resume']) || !$lastType)
+                                <button type="submit" onclick="setType('progress')"
+                                    class="block w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-green-100">
+                                    Kirim Progress
+                                </button>
+                                <button type="submit" onclick="setType('hold')"
+                                    class="block w-full text-left px-4 py-2 text-sm text-yellow-700 hover:bg-yellow-100">
+                                    Tunda (Hold)
+                                </button>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -319,23 +365,6 @@
             previewContainer.appendChild(wrapper);
         }
 
-        // function previewImage(event) {
-        //     const previewContainer = document.getElementById('image-preview');
-        //     previewContainer.innerHTML = ''; // Kosongkan dulu preview sebelumnya
-
-        //     const file = event.target.files[0];
-        //     if (!file) return;
-
-        //     const img = document.createElement('img');
-        //     img.src = URL.createObjectURL(file);
-        //     img.style.maxWidth = '300px';
-        //     img.style.borderRadius = '8px';
-        //     img.style.marginTop = '5px';
-        //     img.alt = "Preview gambar";
-
-        //     previewContainer.appendChild(img);
-        // }
-
         const openModalBtn = document.getElementById("openModal");
         const modalOverlay = document.getElementById("modalOverlay");
         const modalContainer = document.getElementById("modalContainer");
@@ -381,11 +410,32 @@
         // Menutup modal dengan tombol ESC
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
-            if (!modalOverlay.classList.contains("hidden")) {
-                closeModal();
+                if (!modalOverlay.classList.contains("hidden")) {
+                    closeModal();
+                }
             }
+        });
+
+        // Dropdown toggle
+        function setType(type) {
+            document.getElementById('typeInput').value = type;
+            document.getElementById('sendDropdown').classList.add('hidden'); // auto-close dropdown
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('sendDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Optional: close dropdown saat klik di luar
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('sendDropdown');
+            const button = document.querySelector('button[onclick="toggleDropdown()"]');
+            if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                dropdown.classList.add('hidden');
             }
-  });
+        });
+
     </script>
 @endpush
 </x-dynamic-layout>

@@ -12,10 +12,11 @@
             <!-- Navigation Links -->
             <nav class="flex flex-col space-y-2 mt-10">
                 {{-- <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">Dashboard</x-nav-link> --}}
-                <x-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.customers.index')">Pelanggan</x-nav-link>
-                <x-nav-link :href="route('admin.networks.index')" :active="request()->routeIs('admin.networks.index')">Jaringan</x-nav-link>
+                <x-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.customers.index')">Jaringan</x-nav-link>
+                {{-- <x-nav-link :href="route('admin.networks.index')" :active="request()->routeIs('admin.networks.index')">Jaringan</x-nav-link> --}}
                 <x-nav-link :href="route('admin.tasks.index')" :active="request()->routeIs('admin.tasks.index')">Tiket</x-nav-link>
                 <x-nav-link :href="route('admin.announcements.index')" :active="request()->routeIs('admin.announcements.index')">Pengumuman</x-nav-link>
+                <x-nav-link :href="route('task.report')" :active="request()->routeIs('task.report')">Laporan Tiket</x-nav-link>
                 <x-nav-link :href="route('chats.index')" :active="request()->routeIs('chats.index')">Kontak Teknisi</x-nav-link>
             </nav>
         </div>
@@ -73,11 +74,12 @@
         class="sm:hidden fixed top-16 left-0 right-0 bottom-0 z-40 bg-white dark:bg-gray-900 p-6 space-y-4 overflow-y-auto"
     >
         {{-- <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" @click="open = false">Dashboard</x-responsive-nav-link> --}}
-        <x-responsive-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.customers.index')" @click="open = false">Pelanggan</x-responsive-nav-link>
-        <x-responsive-nav-link :href="route('admin.networks.index')" :active="request()->routeIs('admin.networks.index')" @click="open = false">Jaringan</x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.customers.index')" @click="open = false">Jaringan</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('admin.tasks.index')" :active="request()->routeIs('admin.tasks.index')" @click="open = false">Tiket</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('admin.announcements.index')" :active="request()->routeIs('admin.announcements.index')" @click="open = false">Pengumuman</x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('task.report')" :active="request()->routeIs('task.report')" @click="open = false">Laporan Tiket</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('chats.index')" :active="request()->routeIs('chats.index')" @click="open = false">Kontak Teknisi</x-responsive-nav-link>
+        
         <div class="border-t pt-4">
             <x-responsive-nav-link :href="route('admin.profile.edit')" @click="open = false">Profil</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Keluar</x-responsive-nav-link>

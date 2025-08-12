@@ -7,11 +7,15 @@
 
     <div class="py-12 max-w-5xl mx-auto sm:px-6 lg:px-8">
         @if(session('success'))
-            <div class="mb-4 p-4 bg-green-100 text-green-800 rounded border border-green-300">
-                {{ session('success') }}
-            </div>
+            <p
+                x-data="{ show: true }"
+                x-show="show"
+                x-transition
+                x-init="setTimeout(() => show = false, 2000)"
+                class="pt-10 text-sm text-gray-600 dark:text-gray-400"
+            >{{ session('success') }}</p>
         @endif
-
+        
         <a href="{{ route('taskorders.create') }}" class="ml-1 mb-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
             Tambah Progress Baru
         </a>

@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('task_number')->unique()->nullable();
             $table->text('detail');
-            $table->foreignId('network_id')->constrained()->onDelete('cascade');
+            $table->string('category')->nullable();
+            $table->foreignId('customer_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->enum('action', ['in progress', 'completed'])->nullable()->default(null);
+            $table->timestamp('completed_at')->nullable();
             $table->boolean('notified_no_action')->default(false);
             $table->timestamps();
         });

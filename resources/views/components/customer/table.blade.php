@@ -5,7 +5,7 @@
 @endphp
 
 <div>
-    <x-link-add-button href="{{ route($prefix . '.customers.create') }}" text="Tambah Pelanggan" prefix="+" />
+    <x-link-add-button href="{{ route($prefix . '.customers.create') }}" text="Tambah Jaringan" prefix="+" />
 
     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
         @if(session('success'))
@@ -21,7 +21,8 @@
             <thead>
                 <tr class="border-b border-gray-400 dark:border-gray-700">
                     <th class="text-left p-2">#</th>
-                    <th class="text-left p-2">Nama</th>
+                    <th class="text-left p-2">No. Jaringan</th>
+                    <th class="text-left p-2">Pelanggan</th>
                     <th class="text-left p-2">Alamat</th>
                     <th class="text-left p-2">Aksi</th>
                 </tr>
@@ -32,6 +33,7 @@
                         <td class="p-2">
                             {{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}
                         </td>
+                        <td class="p-2">{{ $customer->network_number ?? '-' }}</td>
                         <td class="p-2">{{ $customer->name }}</td>
                         <td class="p-2">{{ $customer->address }}</td>
                         <td class="p-2">

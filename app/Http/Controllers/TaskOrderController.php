@@ -19,75 +19,6 @@ class TaskOrderController extends Controller
     {
         $this->role = $auth::user()->role->name;
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $taskOrders = TaskOrder::with('task')->paginate(10);
-        return view($this->role.'.taskorders.index', compact('taskOrders'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $tasks = Task::all();
-        $taskOrder = null;
-        return view($this->role.'.taskorders.create', compact('tasks', 'taskOrder'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(TaskOrderStoreRequest $request)
-    {
-        TaskOrder::create($request->validated());
-
-        return redirect()->route('taskorders.index')
-            ->with('success', 'Task progress updated successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    { 
-        $taskOrder = TaskOrder::findOrFail($id); //echo '<pre>'; print_r($id); echo "</pre>"; die();
-        return view($this->role.'.taskorders.show', compact('taskOrder'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    { 
-        $taskOrder = TaskOrder::findOrFail($id);
-        $tasks = Task::all();
-        return view($this->role.'.taskorders.edit', compact('taskOrder', 'tasks'));
-    }
-
-    // public function edit($id)
-    // { 
-    //     $taskOrder = TaskOrder::findOrFail($id);
-    //     $tasks = Task::all();
-    //     return view('taskorders.edit', compact('taskOrder', 'tasks'));
-    // }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(TaskOrderUpdateRequest $request, $id)
-    { 
-        $taskOrder = TaskOrder::findOrFail($id);
-        $taskOrder->update($request->validated());
-
-        // return redirect()->route('taskorders.show', $taskOrder)
-        //     ->with('success', 'Task progress updated successfully.');
-        return redirect()->route('technician.taskorders.progress', $taskOrder->task_id)
-            ->with('success', 'Task progress berhasil di perbarui.');
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -107,6 +38,14 @@ class TaskOrderController extends Controller
     public function addProgress(Task $task)
     { //dd($task);
         if ($task) {
+            // mark as read notification
+            DB::table('task_user_assignment')
+                ->where('user_id', Auth::id())
+                ->where('task_id', $task->id)
+                ->update(['is_read' => true]);
+            // if cached remove also
+            cache()->forget("unread_tasks_user_" . Auth::id());
+
             $deadline = $task->created_at->copy()->addHours(6);
         
             if (now()->lessThanOrEqualTo($deadline)) {
@@ -114,9 +53,7 @@ class TaskOrderController extends Controller
                     'parts' => 2,
                     'join' => true,
                 ]) . ' tersisa';
-
-                // $task->remaining = str_replace('dan', '', $task->remaining);
-                // $task->remaining = str_replace('sebelumnya', '', $task->remaining);
+                
                 $task->remaining = trim(str_replace(['dan', 'sebelumnya'], '', $task->remaining));
             } else {
                 $task->remaining = 'Tidak Tercapai';
@@ -137,7 +74,14 @@ class TaskOrderController extends Controller
 
     public function storeProgress(TaskOrderStoreRequest $request, Task $task)
     {
-        $data = $request->validated(); //dd($task);
+        $data = $request->validated();
+
+        // Default timestamps
+        if ($data['type'] === 'hold') {
+            $data['hold_started_at'] = now();
+        } elseif ($data['type'] === 'resume') {
+            $data['resumed_at'] = now();
+        }
 
         // Jika ada file gambar upload
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -151,7 +95,18 @@ class TaskOrderController extends Controller
         // Pastikan task_id diisi dengan ID $task (biar tidak asal dari input client)
         $data['task_id'] = $task->id;
 
-        TaskOrder::create($data);
+        // Simpan ke database
+        $task->orders()->create([
+            'type'            => $data['type'],
+            'status'          => $data['status'],
+            'image'           => $request->file('image')?->store('task_orders', 'public'),
+            'latitude'        => $data['latitude'],
+            'longitude'       => $data['longitude'],
+            'hold_started_at' => $data['hold_started_at'] ?? null,
+            'resumed_at'      => $data['resumed_at'] ?? null,
+        ]);
+
+        //TaskOrder::create($data);
 
         if (is_null($task->action)) {
             $task->action = 'in progress';
@@ -163,5 +118,34 @@ class TaskOrderController extends Controller
 
         return redirect()->route('technician.taskorders.progress', $task->id)
             ->with('success', 'Update Progres Berhasil.');
+    }
+
+    public function progressDuration(Task $task){
+        $taskOrders = TaskOrder::where('task_id', 12)->orderBy('created_at')->get();
+
+        $startTime = $taskOrders->first()->created_at;
+        $endTime = $taskOrders->last()->created_at;
+
+        $totalHoldDuration = 0;
+        $currentHoldStart = null;
+
+        foreach ($taskOrders as $order) {
+            if ($order->type === 'hold') {
+                $currentHoldStart = $order->hold_started_at ?? $order->created_at;
+            }
+
+            if ($order->type === 'resume' && $currentHoldStart) {
+                $resumeTime = $order->resumed_at ?? $order->created_at;
+                $totalHoldDuration += $resumeTime->diffInSeconds($currentHoldStart);
+                $currentHoldStart = null;
+            }
+        }
+
+        $effectiveDuration = $endTime->diffInSeconds($startTime) - $totalHoldDuration;
+
+        return response()->json([
+            'effective_duration' => $effectiveDuration,
+            'formatted_duration' => gmdate('H:i:s', $effectiveDuration),
+        ]);
     }
 }

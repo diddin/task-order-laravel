@@ -34,7 +34,7 @@ class TeknisiController extends Controller
     {
         $technician = Auth::user(); //dd($technician->id);
 
-        $newTasks = Task::with(['network', 'assignedUsers', 'creator'])
+        $newTasks = Task::with(['customer', 'assignedUsers', 'creator'])
             ->forUser($technician->id)
             ->withoutAction()
             ->latest()
@@ -58,7 +58,7 @@ class TeknisiController extends Controller
             return $task;
         });
 
-        $myActivities = Task::with(['network', 'assignedUsers', 'creator'])
+        $myActivities = Task::with(['customer', 'assignedUsers', 'creator'])
             ->forUser($technician->id)
             ->withAction()
             ->latest()

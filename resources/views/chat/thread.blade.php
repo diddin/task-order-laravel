@@ -178,7 +178,8 @@
                 return res.json();
             })
             .then(data => {
-                // chatInput.value = '';
+                chatInput.value = '';
+                
                 // // Tambahkan pesan secara langsung (opsional)
                 // const messageBox = document.createElement('div');
                 // messageBox.className = 'chat-sent';

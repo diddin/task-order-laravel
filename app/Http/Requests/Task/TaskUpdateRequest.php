@@ -4,6 +4,7 @@ namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class TaskUpdateRequest extends FormRequest
 {
@@ -30,8 +31,10 @@ class TaskUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'task_number' => 'required|string|unique:tasks,task_number,' . $this->task->id,
             'detail' => 'required|string|max:1000',
-            'network_id' => 'required|exists:networks,id',
+            'category' => 'required|in:akses,backbone',
+            'customer_id' => 'nullable|exists:customers,id',
             'action' => 'nullable|in:in progress,completed',
             'pic_id' => 'required|exists:users,id',
             'onsite_ids' => 'nullable|array',
@@ -46,8 +49,16 @@ class TaskUpdateRequest extends FormRequest
             'detail.string' => 'Detail harus berupa teks.',
             'detail.max' => 'Detail maksimal :max karakter.',
 
-            'network_id.required' => 'Jaringan harus dipilih.',
-            'network_id.exists' => 'Jaringan yang dipilih tidak valid.',
+            'category.required' => 'Kategori harus dipilih.',
+            'category.in' => 'Kategori harus berupa akses atau backbone.',
+
+            'customer_id' => [
+                Rule::requiredIf(function () {
+                    return $this->input('category') === 'akses';
+                }),
+                'nullable',
+                'exists:customers,id',
+            ],
 
             'action.in' => 'Field aksi harus salah satu dari: sedang dikerjakan, selesai.',
             // 'action.nullable' biasanya gak perlu pesan khusus

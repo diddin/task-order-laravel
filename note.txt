@@ -111,7 +111,9 @@ crontab -e
 * * * * * cd /path/to/your/project && php artisan schedule:run >> /dev/null 2>&1
 Ganti /path/to/your/project dengan lokasi folder Laravel kamu, misalnya:
 * * * * * cd /var/www/html/myapp && php artisan schedule:run >> /dev/null 2>&1
+*/30 * * * * cd /var/www/html/task-order && php artisan schedule:run >> /dev/null 2>&1
 
+*/30 → berarti setiap 30 menit.
 * * * * * → berarti setiap menit
 php artisan schedule:run → menjalankan scheduler Laravel
 >> /dev/null 2>&1 → membuang output agar tidak memenuhi log server

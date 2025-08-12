@@ -20,7 +20,7 @@
     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
         <table class="min-w-full text-sm">
             <thead>
-                <tr class="border-b border-gray-400 dark:border-gray-700">
+                <tr class="border-b border-gray-400 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                     <th class="text-left p-2">#</th>
                     <th class="text-left p-2">Nama</th>
                     <th class="text-left p-2">Email</th>

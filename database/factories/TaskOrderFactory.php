@@ -23,14 +23,20 @@ class TaskOrderFactory extends Factory
      */
     public function definition()
     {
+        $type = $this->faker->randomElement(['progress', 'hold', 'resume']);
+        $createdAt = $this->faker->dateTimeBetween('-1 month', 'now');
+        
         return [
-            'task_id'    => Task::factory(), // buat Task baru otomatis
-            'status'     => $this->faker->sentence(6),
-            'image'      => null,
-            'latitude'   => $this->faker->latitude(-90, 90),
-            'longitude'  => $this->faker->longitude(-180, 180),
-            'created_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
-            'updated_at' => now(),
+            'task_id'          => Task::factory(), // Buat Task baru otomatis
+            'status'           => $this->faker->sentence(6),
+            'image'            => null,
+            'latitude'         => $this->faker->latitude(-90, 90),
+            'longitude'        => $this->faker->longitude(-180, 180),
+            'type'             => $type,
+            'hold_started_at'  => $type === 'hold' ? $createdAt : null,
+            'resumed_at'       => $type === 'resume' ? $this->faker->dateTimeBetween($createdAt, 'now') : null,
+            'created_at'       => $createdAt,
+            'updated_at'       => now(),
         ];
     }
 

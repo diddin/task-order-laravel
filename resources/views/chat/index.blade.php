@@ -1,11 +1,11 @@
 <x-dynamic-layout>
     <div class="body-content">  
         <div class="container space-y-6">
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Percakapan</h3>
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 px-1">Percakapan</h3>
             @if($availableUsers->count())
                 <form action="{{ route('chats.thread.redirect') }}" method="GET" class="mb-6">
-                    <label for="to_user_id" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Mulai Chat Baru</label>
-                    <div class="flex items-center gap-2">
+                    <label for="to_user_id" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 px-1">Mulai Chat Baru</label>
+                    <div class="flex items-center gap-2 px-1">
                         <select id="to_user_id" name="to_user_id" class="select2 w-full">
                             @if(Auth::user()->role->name !== 'technician')
                                 <option  value="0">

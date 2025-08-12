@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Http\Requests\Customer\CustomerStoreRequest;
 use App\Http\Requests\Customer\CustomerUpdateRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
@@ -20,7 +22,10 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::latest()->paginate(10);
+        //$customers = Customer::latest()->paginate(10);
+        $customers = Customer::orderByRaw("id = 1 DESC")
+                         ->orderBy('name', 'asc')
+                         ->paginate(10);
         return view($this->role.'.customers.index', compact('customers'));
     }
 
@@ -38,6 +43,9 @@ class CustomerController extends Controller
     public function store(CustomerStoreRequest $request)
     {
         Customer::create($request->validated());
+
+        Log::info('Customer added', ['name' => $request->name, 'user' => Auth::user()?->id]);
+
         return redirect()->route($this->role.'.customers.index')
             ->with('success', 'Data Pelanggan '.$request->name.' berhasil ditambahkan.');
     }
@@ -47,7 +55,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $customer->load(['networks.tasks.assignedUsers']);
+        $customer->load(['tasks.assignedUsers']);
         return view($this->role.'.customers.show', compact('customer'));
     }
 
@@ -65,6 +73,9 @@ class CustomerController extends Controller
     public function update(CustomerUpdateRequest $request, Customer $customer)
     {
         $customer->update($request->validated());
+
+        Log::info('Customer updated', ['name' => $customer->name, 'user' => Auth::user()?->id]);
+
         return redirect()->route($this->role.'.customers.index')
             ->with('success', 'Data Pelanggan '.$customer->name.' berhasil diperbarui.');
     }
@@ -74,8 +85,36 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
+        $name = $customer->name; // Simpan dulu sebelum dihapus
         $customer->delete();
-        return redirect()->route($this->role.'.customers.index')
-            ->with('success', 'Data Pelanggan '.$customer->name.' berhasil dihapus.');
+
+        return redirect()->route($this->role . '.customers.index')
+            ->with('success', 'Data Pelanggan ' . $name . ' berhasil dihapus.');
+    }
+
+    public function restore($id)
+    {
+        $customer = Customer::withTrashed()->findOrFail($id);
+        $customer->restore();
+
+        return redirect()->route($this->role . '.customers.index')
+            ->with('success', 'Data Pelanggan ' . $customer->name . ' berhasil dikembalikan.');
+    }
+
+    public function ajaxSearch(Request $request)
+    {
+        $search = strtolower($request->get('q'));
+
+        $customers = Customer::whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+            ->orWhereRaw('LOWER(contact_person) LIKE ?', ["%{$search}%"])
+            ->orWhereRaw('LOWER(address) LIKE ?', ["%{$search}%"])
+            ->orWhereRaw('LOWER(network_number) LIKE ?', ["%{$search}%"])
+            ->orWhereRaw('LOWER(technical_data) LIKE ?', ["%{$search}%"])
+            ->orWhereRaw('LOWER(cluster) LIKE ?', ["%{$search}%"])
+            ->orderBy('name')
+            ->limit(10)
+            ->get(['id', 'name', 'network_number']);
+
+        return response()->json($customers);
     }
 }

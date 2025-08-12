@@ -16,14 +16,12 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             CustomerSeeder::class,
-            NetworkSeeder::class,
-            TaskSeeder::class,
+            //TaskSeeder::class,
+            MonthlyTaskSeeder::class,
             TaskOrderSeeder::class,
-            AssetSeeder::class,
-            AssetPortSeeder::class,
-            AssetImageSeeder::class,
             ChatSeeder::class,
             AnnouncementSeeder::class,
+            NetworkCountSeeder::class,
         ]);
     }
 }

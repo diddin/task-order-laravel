@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Network;
+use App\Models\Customer;
 use App\Models\Task;
 use App\Models\User;
 use App\Http\Requests\Task\TaskStoreRequest;
 use App\Http\Requests\Task\TaskUpdateRequest;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,48 +31,36 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $actionFilter = $request->input('action');
+        $categoryFilter = $request->input('category');
+
         if( $this->role == 'master' || $this->role == 'admin') {
-            $tasks = Task::with(['network', 'assignedUsers', 'creator'])
-                ->latest()
-                ->paginate(10);
+            $query = Task::with(['customer', 'assignedUsers', 'creator'])->latest();
         } elseif($this->role == 'technician') {
-            // Tiket Baru untuk Anda (belum direspons)
-            // $newTasks = Task::with(['network', 'assignedUser', 'creator'])
-            //     ->forUser($userId)
-            //     ->withoutAction()
-            //     ->latest()
-            //     ->take(10)
-            //     ->get();
-
-            // $yourActivities = Task::with(['network', 'assignedUser', 'creator'])
-            //     ->forUser($userId)
-            //     ->withAction()
-            //     ->latest()
-            //     ->take(10)
-            //     ->get();
-
-            // $tasks = [
-            //     'newTasks' => $newTasks,
-            //     'yourActivities' => $yourActivities,
-            // ];
-
-            // $tasks = Task::with(['network', 'assignedUser', 'creator'])
-            //     ->where('assigned_user_id', Auth::id())
-            //     ->latest()
-            //     ->paginate(10);
-
-            $tasks = Task::with(['network', 'assignedUsers', 'creator'])
+            $query = Task::with(['customer', 'assignedUsers', 'creator'])
                 ->forUser(Auth::id())
                 ->withAction()
-                ->latest()
-                //->take(3)
-                ->get();
+                ->latest();
             
         } else {
             abort(403, 'Unauthorized action.');
         } //echo "<pre>"; print_r($tasks->toArray()); echo "</pre>"; die();
+
+        if (in_array($actionFilter, ['in progress', 'completed', 'null'])) {
+            if ($actionFilter === 'null') {
+                $query->whereNull('action');
+            } else {
+                $query->where('action', $actionFilter);
+            }
+        }
+
+        if (in_array($categoryFilter, ['akses', 'backbone'])) {
+            $query->where('category', $categoryFilter);
+        }
+
+        $tasks = $this->role === 'technician' ? $query->get() : $query->paginate(10)->appends(['action' => $actionFilter, 'category' => $categoryFilter]);
 
         return view($this->role.'.tasks.index', compact('tasks'));
     }
@@ -82,14 +71,14 @@ class TaskController extends Controller
     public function create()
     {
         $task = new Task();
-        $networks = Network::all();
+        $customers = Customer::all();
         $users = User::where('role_id', 3)->get();
 
         // Kosongkan default nilai untuk form
         $pic = null;
         $onsiteTeam = [];
 
-        return view($this->role . '.tasks.create', compact('task', 'networks', 'users', 'pic', 'onsiteTeam'));
+        return view($this->role . '.tasks.create', compact('task', 'customers', 'users', 'pic', 'onsiteTeam'));
     }
 
     /**
@@ -102,8 +91,10 @@ class TaskController extends Controller
         try {
             // Buat task-nya
             $task = Task::create([
+                'task_number' => $request->task_number,
                 'detail' => $request->detail,
-                'network_id' => $request->network_id,
+                'category' => $request->category,
+                'customer_id' => $request->customer_id,
                 'created_by' => Auth::id(),
                 'action' => $request->action,
             ]);
@@ -127,7 +118,7 @@ class TaskController extends Controller
             $task->assignedUsers()->attach($assignData);
     
             // Trigger event
-            event(new TaskCreated($task));
+            // event(new TaskCreated($task));
     
             DB::commit();
     
@@ -143,9 +134,39 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        $task->load(['network', 'assignedUsers', 'creator']);
+        $task->load(['customer', 'assignedUsers', 'creator']);
 
-        //echo "<pre>"; print_r($task->toArray()); echo "</pre>"; die();
+        if ($task->orders->isEmpty()) {
+            // Tidak ada order, mungkin set durasi 0 atau nilai default
+            $hours = $minutes = $seconds = 0;
+        } else {
+            $startTime = Carbon::parse($task->orders->first()->created_at);
+            $endTime = Carbon::parse($task->orders->last()->created_at);
+
+            $totalHoldDuration = 0;
+            $currentHoldStart = null;
+
+            foreach ($task->orders as $order) {
+                if ($order->type === 'hold') {
+                    $currentHoldStart = Carbon::parse($order->hold_started_at ?? $order->created_at);
+                }
+
+                if ($order->type === 'resume' && $currentHoldStart) {
+                    $resumeTime = Carbon::parse($order->resumed_at ?? $order->created_at);
+                    $totalHoldDuration += $resumeTime->diffInSeconds($currentHoldStart);
+                    $currentHoldStart = null;
+                }
+            }
+
+            $effectiveDuration = $endTime->diffInSeconds($startTime) - $totalHoldDuration;
+            $hours = floor($effectiveDuration / 3600);
+            $minutes = floor(($effectiveDuration % 3600) / 60);
+            $seconds = $effectiveDuration % 60;
+        }
+
+        // echo "Durasi Efektif Pengerjaan: {$hours} jam, {$minutes} menit, {$seconds} detik";
+
+        // echo "<pre>"; print_r($task->toArray()); echo "</pre>"; die();
 
         return view($this->role.'.tasks.show', compact('task'));
     }
@@ -155,7 +176,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        $networks = Network::all();
+        $customers = Customer::all();
         $users = User::where('role_id', 3)->get(); // teknisi
 
         // Ambil semua assigned users (PIC & onsite) dari relasi pivot
@@ -164,7 +185,7 @@ class TaskController extends Controller
         $pic = $assignedUsers->firstWhere('pivot.role_in_task', 'pic');
         $onsiteTeam = $assignedUsers->where('pivot.role_in_task', 'onsite')->pluck('id')->toArray();
 
-        return view($this->role.'.tasks.edit', compact('task', 'networks', 'users', 'pic', 'onsiteTeam'));
+        return view($this->role.'.tasks.edit', compact('task', 'customers', 'users', 'pic', 'onsiteTeam'));
     }
 
     /**
@@ -177,8 +198,10 @@ class TaskController extends Controller
         try {
             // Update data utama task
             $task->update([
+                'task_number' => $request->task_number,
                 'detail' => $request->detail,
-                'network_id' => $request->network_id,
+                'category' => $request->category,
+                'customer_id' => $request->customer_id,
                 'action' => $request->action,
             ]);
 

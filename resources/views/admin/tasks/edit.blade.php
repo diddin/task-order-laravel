@@ -10,7 +10,7 @@
             <div class="bg-white dark:bg-gray-800 p-6 sm:rounded-lg shadow-sm">
                 <x-task.form 
                     :task="$task" 
-                    :networks="$networks" 
+                    :customers="$customers" 
                     :users="$users" 
                     :pic="$pic" 
                     :onsiteTeam="$onsiteTeam" 
@@ -18,7 +18,7 @@
             </div>
         </div>
         <hr class="my-6 border-gray-600">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <h4 class="text-md font-semibold mb-2">Progress Timeline</h4>
             @if ($task->orders->count())
                 <ul class="list-disc list-inside text-sm">

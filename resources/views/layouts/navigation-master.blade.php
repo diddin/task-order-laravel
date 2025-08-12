@@ -14,11 +14,13 @@
                 {{-- <x-nav-link :href="route('master.dashboard')" :active="request()->routeIs('master.dashboard')">Dashboard</x-nav-link> --}}
                 <x-nav-link :href="route('master.admins.index')" :active="request()->routeIs('master.admins.index')">Admin</x-nav-link>
                 <x-nav-link :href="route('master.technicians.index')" :active="request()->routeIs('master.technicians.index')">Teknisi</x-nav-link>
-                <x-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')">Pelanggan</x-nav-link>
-                <x-nav-link :href="route('master.networks.index')" :active="request()->routeIs('master.networks.index')">Jaringan</x-nav-link>
+                <x-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')">Jaringan</x-nav-link>
+                {{-- <x-nav-link :href="route('master.networks.index')" :active="request()->routeIs('master.networks.index')">Jaringan</x-nav-link> --}}
                 <x-nav-link :href="route('master.tasks.index')" :active="request()->routeIs('master.tasks.index')">Tiket</x-nav-link>
                 <x-nav-link :href="route('master.announcements.index')" :active="request()->routeIs('master.announcements.index')">Pengumuman</x-nav-link>
+                <x-nav-link :href="route('task.report')" :active="request()->routeIs('task.report')">Laporan Tiket</x-nav-link>
                 <x-nav-link :href="route('chats.index')" :active="request()->routeIs('chats.index')">Kontak Teknisi</x-nav-link>
+                
             </nav>
         </div>
 
@@ -72,12 +74,12 @@
         {{-- <x-responsive-nav-link :href="route('master.dashboard')" :active="request()->routeIs('master.dashboard')" @click="open = false">Dashboard</x-responsive-nav-link> --}}
         <x-responsive-nav-link :href="route('master.admins.index')" :active="request()->routeIs('master.admins.index')" @click="open = false">Admin</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('master.technicians.index')" :active="request()->routeIs('master.technicians.index')" @click="open = false">Teknisi</x-responsive-nav-link>
-        <x-responsive-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')" @click="open = false">Pelanggan</x-responsive-nav-link>
-        <x-responsive-nav-link :href="route('master.networks.index')" :active="request()->routeIs('master.networks.index')" @click="open = false">Jaringan</x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('master.customers.index')" :active="request()->routeIs('master.customers.index')" @click="open = false">Jaringan</x-responsive-nav-link>
+        {{-- <x-responsive-nav-link :href="route('master.networks.index')" :active="request()->routeIs('master.networks.index')" @click="open = false">Jaringan</x-responsive-nav-link> --}}
         <x-responsive-nav-link :href="route('master.tasks.index')" :active="request()->routeIs('master.tasks.index')" @click="open = false">Tiket</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('master.announcements.index')" :active="request()->routeIs('master.announcements.index')" @click="open = false">Pengumuman</x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('task.report')" :active="request()->routeIs('task.report')" @click="open = false">Laporan Tiket</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('chats.index')" :active="request()->routeIs('chats.index')" @click="open = false">Kontak Teknisi</x-responsive-nav-link>
-
         <div class="border-t pt-4">
             <x-responsive-nav-link :href="route('master.profile.edit')" @click="open = false">Profil</x-responsive-nav-link>
             <form method="POST" action="{{ route('logout') }}">

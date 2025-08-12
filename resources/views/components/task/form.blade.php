@@ -1,4 +1,4 @@
-@props(['task', 'networks', 'users', 'pic' => null, 'onsiteTeam' => []])
+@props(['task', 'customers', 'users', 'pic' => null, 'onsiteTeam' => []])
 
 @php
     $prefix = Auth::user()->role->name; // 'admin', 'master', dll
@@ -17,6 +17,14 @@
         </div>
     @endif
 
+    {{-- Task Number --}}
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Nomor Tiket</label>
+        <input type="text" name="task_number" value="{{ old('task_number', $task->task_number) }}"
+               class="w-full p-2 mt-1 border rounded dark:bg-gray-700 dark:text-white" />
+        @error('task_number') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+    </div>
+
     {{-- Detail --}}
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Detail</label>
@@ -24,21 +32,46 @@
         @error('detail') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
     </div>
 
-    {{-- Network --}}
+    {{-- Kategori --}}
     <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">No. Jaringan</label>
-        <select id="networkSelect" name="network_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
-            <option value="">-- Pilih Jaringan --</option>
-            @foreach($networks as $network)
-                <option 
-                    value="{{ $network->id }}"
-                    data-customer="{{ $network->customer->name }}"
-                    {{ old('network_id', $task->network_id) == $network->id ? 'selected' : '' }}>
-                    {{ $network->network_number }} : {{ $network->customer->name }} - {{ $network->customer->address }}
-                </option>
-            @endforeach
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Kategori</label>
+        <select name="category" id="category" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+            <option value="">-- Pilih Kategori --</option>
+            <option value="akses" {{ old('category', $task->category) === 'akses' ? 'selected' : '' }}>
+                Akses
+            </option>
+            <option value="backbone" {{ old('category', $task->category) === 'backbone' ? 'selected' : '' }}>
+                Backbone
+            </option>
         </select>
-        @error('network_id') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+        @error('category') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+    </div>
+    
+    {{-- Customer --}}
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Jaringan</label>
+        <div id="lintas-arta">
+            PT Lintas Arta
+            <input type="hidden" name="customer_id" value="1" />
+        </div>
+        <div id="customer-field">
+            {{-- <select id="customer" name="customer_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+                <option value="">-- Pilih Jaringan --</option>
+                @foreach($customers as $customer)
+                    <option 
+                        value="{{ $customer->id }}"
+                        {{ old('customer_id', $task->customer_id) == $customer->id ? 'selected' : '' }}>
+                        {{ $customer->name }} — {{ $customer->network_number }}
+                    </option>
+                @endforeach
+            </select> --}}
+            <select id="customer" name="customer_id" class="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+
+            </select>
+            @error('customer_id') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+        </div>
+        {{-- Jika kamu punya halaman tambah jaringan --}}
+        <a href="{{ route($prefix . '.customers.create') }}" class="text-blue-500">Tambah Jaringan</a>
     </div>
 
     {{-- PIC --}}
@@ -94,8 +127,8 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#networkSelect').select2({
-            placeholder: "-- Pilih Jaringan --",
+        $('#category').select2({
+            placeholder: "-- Pilih Kategori --",
             allowClear: true
         });
         $('#picSelect').select2({
@@ -107,10 +140,65 @@
             allowClear: true,
             width: '100%' // penting agar lebarnya penuh
         });
-
         $('#action').select2({
             allowClear: true
         });
+        $('#customer').select2({
+            placeholder: '-- Pilih Jaringan --',
+            minimumInputLength: 2,
+            ajax: {
+                url: '/api/customers',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term // search term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function(customer) {
+                            return {
+                                id: customer.id,
+                                text: customer.name + ' — ' + customer.network_number
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            language: {
+                inputTooShort: function () {
+                    return 'Silakan ketik minimal 2 karakter';
+                },
+                searching: function() {
+                    return 'Sedang mencari...';
+                },
+                noResults: function() {
+                    return 'Data tidak ditemukan';
+                }
+            },
+            width: '100%'
+        });
+        // $('#customer').select2({
+        //     placeholder: "-- Pilih Pelanggan --",
+        //     allowClear: true
+        // });
+
+        function toggleCustomerField() {
+            if ($('#category').val() === 'backbone') {
+                $('#customer-field').hide();
+                $('#lintas-arta').show();
+            } else {
+                $('#lintas-arta').hide();
+                $('#customer-field').show();
+            }
+        }
+
+        $('#category').on('change', toggleCustomerField);
+
+        // Panggil sekali saat halaman siap
+        toggleCustomerField();
 
         // Fungsi untuk menonaktifkan opsi yang sama dengan PIC terpilih
         function disableSelectedPicInOnsite() {
