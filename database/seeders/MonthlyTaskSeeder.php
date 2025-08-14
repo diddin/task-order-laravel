@@ -16,9 +16,9 @@ class MonthlyTaskSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->seedMonthlyTasks(2025, 6, 70); // Juni
-        $this->seedMonthlyTasks(2025, 7, 80); // Juli
-        $this->seedMonthlyTasks(2025, 8, 90); // Agustus
+        $this->seedMonthlyTasks(2025, 6, 300); // Juni
+        $this->seedMonthlyTasks(2025, 7, 400); // Juli
+        $this->seedMonthlyTasks(2025, 8, 500); // Agustus
     }
 
     protected function seedMonthlyTasks(int $year, int $month, int $customerMaxId)

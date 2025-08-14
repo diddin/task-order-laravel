@@ -15,9 +15,9 @@ class NetworkCountSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            '2025-06' => 70,
-            '2025-07' => 80,
-            '2025-08' => 90,
+            '2025-06' => 300,
+            '2025-07' => 400,
+            '2025-08' => 500,
         ];
 
         foreach ($data as $month => $total) {

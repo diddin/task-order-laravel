@@ -42,7 +42,8 @@ class TaskNoActionReminder extends Notification
 
         return (new MailMessage)
             ->subject('Reminder: Tiket Belum Dikerjakan')
-            ->line('Tiket #' . $this->task->task_number . ' masih belum dikerjakan sejak dibuat lebih dari 6 jam.')
+            // ->line('Tiket #' . $this->task->task_number . ' masih belum dikerjakan sejak dibuat lebih dari 6 jam.')
+            ->line('Tiket #' . $this->task->task_number . ' masih belum dikerjakan sejak dibuat.')
             ->action('Lihat Tiket', url('/tasks/'.$this->task->id))
             ->line('Segera tindak lanjuti tiket ini.');
     }

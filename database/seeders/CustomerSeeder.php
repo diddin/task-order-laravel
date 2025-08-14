@@ -18,6 +18,6 @@ class CustomerSeeder extends Seeder
         
         //Customer::factory()->count(50)->create(); // membuat 50 data customer
         // Membuat 5 pelanggan kategori akses
-        Customer::factory()->akses()->count(89)->create();
+        Customer::factory()->akses()->count(499)->create();
     }
 }
